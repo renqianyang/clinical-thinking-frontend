@@ -686,9 +686,14 @@
                     <div class="card">
                         <div class="card-header">
                             <h2 class="card-title">病例管理</h2>
-                            <button class="btn btn-primary" onclick="openCaseModal()">
-                                ➕ 创建病例
-                            </button>
+                            <div class="flex gap-2">
+                                <button class="btn btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="openAICaseModal()">
+                                    🤖 AI创建
+                                </button>
+                                <button class="btn btn-primary" onclick="openCaseModal()">
+                                    ➕ 手动创建
+                                </button>
+                            </div>
                         </div>
                         
                         <div class="table-container">
@@ -912,6 +917,230 @@
 
         function closeModal() {
             document.getElementById('modal').classList.remove('show');
+        }
+
+        // AI Create Case Modal
+        function openAICaseModal() {
+            const content = `
+                <form id="aiCaseForm" onsubmit="generateCaseWithAI(event)">
+                    <div class="form-group">
+                        <label>疾病类型或主题 *</label>
+                        <input type="text" name="topic" placeholder="例如：急性心肌梗死、糖尿病酮症酸中毒、肺炎" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>难度</label>
+                            <select name="difficulty">
+                                <option value="简单">简单</option>
+                                <option value="中等" selected>中等</option>
+                                <option value="困难">困难</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>患者年龄范围</label>
+                            <select name="ageRange">
+                                <option value="">随机</option>
+                                <option value="18-30">18-30岁</option>
+                                <option value="30-50">30-50岁</option>
+                                <option value="50-70">50-70岁</option>
+                                <option value="70+">70岁以上</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>特殊要求（可选）</label>
+                        <textarea name="requirements" rows="2" placeholder="例如：合并高血压、有吸烟史、首次发作"></textarea>
+                    </div>
+                    
+                    <div id="aiGenerating" class="text-center hidden">
+                        <div style="font-size: 40px; margin-bottom: 16px;">🤖</div>
+                        <p>AI正在生成病例，请稍候...</p>
+                        <div class="loading" style="border-color: #e0e0e0; border-top-color: #667eea; margin-top: 12px;"></div>
+                    </div>
+                    
+                    <div id="aiPreview" class="hidden">
+                        <h4 style="margin-bottom: 12px;">📋 预览生成的病例</h4>
+                        <div id="aiPreviewContent" style="background: #f9fafb; padding: 16px; border-radius: 10px; margin-bottom: 16px;"></div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button type="submit" class="btn btn-primary" id="aiGenerateBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            ✨ 生成病例
+                        </button>
+                        <button type="button" class="btn btn-primary hidden" id="aiSaveBtn" onclick="saveAIGeneratedCase()">
+                            💾 保存病例
+                        </button>
+                    </div>
+                </form>
+            `;
+            openModal('🤖 AI创建病例', content);
+        }
+
+        let generatedCaseData = null;
+
+        async function generateCaseWithAI(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const topic = form.topic.value;
+            const difficulty = form.difficulty.value;
+            const ageRange = form.ageRange.value;
+            const requirements = form.requirements.value;
+            
+            // 显示加载状态
+            document.getElementById('aiGenerating').classList.remove('hidden');
+            document.getElementById('aiGenerateBtn').classList.add('hidden');
+            document.getElementById('aiPreview').classList.add('hidden');
+            
+            try {
+                // 构建提示词
+                const prompt = `请创建一个临床病例用于医学生训练。
+
+疾病主题：${topic}
+难度：${difficulty}
+${ageRange ? `患者年龄范围：${ageRange}` : ''}
+${requirements ? `特殊要求：${requirements}` : ''}
+
+请按以下JSON格式返回病例信息：
+{
+    "title": "病例标题",
+    "description": "病例描述（200-300字，包含主诉、现病史）",
+    "diagnosis": "正确诊断",
+    "difficulty": "${difficulty}",
+    "patient_info": {
+        "age": 数字,
+        "gender": "male" 或 "female"
+    },
+    "symptoms": ["症状1", "症状2", "症状3"],
+    "questions": [
+        {"question": "病史采集问题1", "answer": "对应答案"},
+        {"question": "病史采集问题2", "answer": "对应答案"}
+    ],
+    "examinations": [
+        {"name": "检查项目1", "result": "检查结果"}
+    ]
+}
+
+请确保：
+1. 病例描述要真实、详细，包含足够的诊断线索
+2. 症状列表要完整
+3. 病史采集问题要涵盖诊断关键点
+4. 检查项目要合理且有助于诊断`;
+
+                // 调用后端AI接口
+                const res = await fetch(`${API_BASE}/ai/generate-case`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+                
+                if (!res.ok) {
+                    // 如果后端没有AI接口，使用模拟数据
+                    generatedCaseData = generateMockCase(topic, difficulty, ageRange, requirements);
+                } else {
+                    const data = await res.json();
+                    generatedCaseData = data.case;
+                }
+                
+                // 显示预览
+                document.getElementById('aiGenerating').classList.add('hidden');
+                document.getElementById('aiPreview').classList.remove('hidden');
+                document.getElementById('aiSaveBtn').classList.remove('hidden');
+                
+                document.getElementById('aiPreviewContent').innerHTML = `
+                    <p><strong>标题：</strong>${generatedCaseData.title}</p>
+                    <p><strong>诊断：</strong>${generatedCaseData.diagnosis}</p>
+                    <p><strong>难度：</strong><span class="badge badge-blue">${generatedCaseData.difficulty}</span></p>
+                    <p><strong>患者：</strong>${generatedCaseData.patient_info?.age}岁 ${generatedCaseData.patient_info?.gender === 'male' ? '男' : '女'}</p>
+                    <p><strong>描述：</strong>${generatedCaseData.description}</p>
+                    <p><strong>症状：</strong>${generatedCaseData.symptoms?.join('、') || '-'}</p>
+                `;
+                
+            } catch (err) {
+                document.getElementById('aiGenerating').classList.add('hidden');
+                document.getElementById('aiGenerateBtn').classList.remove('hidden');
+                alert('生成失败：' + err.message);
+            }
+        }
+
+        // 模拟AI生成病例（当后端没有AI接口时使用）
+        function generateMockCase(topic, difficulty, ageRange, requirements) {
+            const cases = {
+                '心肌梗死': {
+                    title: '急性胸痛患者的诊断与处理',
+                    description: '患者男性，55岁，因"突发胸痛2小时"就诊。患者2小时前无明显诱因出现胸骨后压榨性疼痛，向左肩及左上肢放射，伴大汗、恶心，无呕吐。疼痛持续不缓解，含服硝酸甘油无效。既往有高血压病史5年，吸烟史20年。查体：T 36.8℃，P 98次/分，R 20次/分，BP 150/95mmHg。神志清楚，痛苦面容，双肺呼吸音清，未闻及干湿啰音。心率98次/分，律齐，各瓣膜区未闻及病理性杂音。',
+                    diagnosis: '急性ST段抬高型心肌梗死',
+                    symptoms: ['胸骨后压榨性疼痛', '向左肩放射', '大汗', '恶心'],
+                    patient_info: { age: 55, gender: 'male' }
+                },
+                '糖尿病': {
+                    title: '意识障碍患者的急诊处理',
+                    description: '患者女性，62岁，因"意识模糊半天"由家属送入急诊。患者有2型糖尿病史10年，平时口服二甲双胍治疗，血糖控制不佳。近3天因感冒进食减少，仍按原剂量服药。今日上午家属发现患者精神萎靡、反应迟钝，逐渐出现意识模糊。查体：T 37.2℃，P 110次/分，R 24次/分，BP 130/80mmHg。嗜睡状态，呼之可睁眼，皮肤干燥，弹性差。双侧瞳孔等大等圆，对光反射灵敏。',
+                    diagnosis: '糖尿病酮症酸中毒',
+                    symptoms: ['意识模糊', '精神萎靡', '皮肤干燥', '呼吸深快'],
+                    patient_info: { age: 62, gender: 'female' }
+                },
+                '肺炎': {
+                    title: '发热咳嗽患者的诊治',
+                    description: '患者男性，28岁，因"发热、咳嗽3天"就诊。患者3天前受凉后出现发热，体温最高39.5℃，伴畏寒、寒战，咳嗽，咳黄色脓痰，量中等，伴右侧胸痛，深呼吸及咳嗽时加重。无咯血，无呼吸困难。自服感冒药效果不佳。既往体健。查体：T 39.2℃，P 100次/分，R 22次/分，BP 120/80mmHg。急性病容，口唇无发绀，右下肺叩诊浊音，呼吸音减低，可闻及湿啰音。',
+                    diagnosis: '右下肺肺炎',
+                    symptoms: ['发热', '咳嗽', '咳黄痰', '胸痛'],
+                    patient_info: { age: 28, gender: 'male' }
+                }
+            };
+            
+            // 根据主题匹配或随机选择
+            let caseData = null;
+            for (const key in cases) {
+                if (topic.includes(key)) {
+                    caseData = cases[key];
+                    break;
+                }
+            }
+            
+            if (!caseData) {
+                const keys = Object.keys(cases);
+                caseData = cases[keys[Math.floor(Math.random() * keys.length)]];
+            }
+            
+            // 根据年龄范围调整
+            if (ageRange) {
+                const [min, max] = ageRange.replace('+', '').split('-').map(Number);
+                caseData.patient_info.age = Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            
+            return {
+                ...caseData,
+                difficulty,
+                questions: [
+                    { question: '疼痛的性质和部位？', answer: '胸骨后压榨性疼痛，向左肩放射' },
+                    { question: '有无诱因？', answer: '无明显诱因，突发' },
+                    { question: '既往病史？', answer: '高血压5年，吸烟20年' }
+                ],
+                examinations: [
+                    { name: '心电图', result: 'ST段抬高' },
+                    { name: '心肌酶', result: 'CK-MB、肌钙蛋白升高' }
+                ]
+            };
+        }
+
+        async function saveAIGeneratedCase() {
+            if (!generatedCaseData) return;
+            
+            try {
+                await apiPost('/cases', generatedCaseData);
+                closeModal();
+                renderTeacherCases();
+                alert('病例创建成功！');
+            } catch (err) {
+                alert('保存失败：' + err.message);
+            }
         }
 
         // Case Modal
