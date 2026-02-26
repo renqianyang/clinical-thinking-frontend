@@ -924,45 +924,43 @@
             const content = `
                 <form id="aiCaseForm" onsubmit="generateCaseWithAI(event)">
                     <div class="form-group">
-                        <label>疾病类型或主题 *</label>
-                        <input type="text" name="topic" placeholder="例如：急性心肌梗死、糖尿病酮症酸中毒、肺炎" required>
+                        <label>病种类型 *</label>
+                        <select name="diseaseType" required>
+                            <option value="">请选择病种</option>
+                            <option value="心血管疾病">心血管疾病</option>
+                            <option value="呼吸系统疾病">呼吸系统疾病</option>
+                            <option value="消化系统疾病">消化系统疾病</option>
+                            <option value="神经系统疾病">神经系统疾病</option>
+                            <option value="内分泌系统疾病">内分泌系统疾病</option>
+                            <option value="泌尿系统疾病">泌尿系统疾病</option>
+                            <option value="血液系统疾病">血液系统疾病</option>
+                            <option value="感染性疾病">感染性疾病</option>
+                        </select>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>难度</label>
-                            <select name="difficulty">
-                                <option value="简单">简单</option>
-                                <option value="中等" selected>中等</option>
-                                <option value="困难">困难</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>患者年龄范围</label>
-                            <select name="ageRange">
-                                <option value="">随机</option>
-                                <option value="18-30">18-30岁</option>
-                                <option value="30-50">30-50岁</option>
-                                <option value="50-70">50-70岁</option>
-                                <option value="70+">70岁以上</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label>难度 *</label>
+                        <select name="difficulty" required>
+                            <option value="简单">简单</option>
+                            <option value="中等" selected>中等</option>
+                            <option value="困难">困难</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
                         <label>特殊要求（可选）</label>
-                        <textarea name="requirements" rows="2" placeholder="例如：合并高血压、有吸烟史、首次发作"></textarea>
+                        <input type="text" name="special" placeholder="如：合并糖尿病、老年患者等">
                     </div>
                     
                     <div id="aiGenerating" class="text-center hidden">
-                        <div style="font-size: 40px; margin-bottom: 16px;">🤖</div>
+                        <div style="font-size: 40px; margin-bottom: 16px;">✨</div>
                         <p>AI正在生成病例，请稍候...</p>
-                        <div class="loading" style="border-color: #e0e0e0; border-top-color: #667eea; margin-top: 12px;"></div>
+                        <div class="loading" style="border-color: #e0e0e0; border-top-color: #667eea; margin: 12px auto;"></div>
                     </div>
                     
                     <div id="aiPreview" class="hidden">
                         <h4 style="margin-bottom: 12px;">📋 预览生成的病例</h4>
-                        <div id="aiPreviewContent" style="background: #f9fafb; padding: 16px; border-radius: 10px; margin-bottom: 16px;"></div>
+                        <div id="aiPreviewContent" style="background: #f9fafb; padding: 16px; border-radius: 10px; margin-bottom: 16px; max-height: 300px; overflow-y: auto;"></div>
                     </div>
                     
                     <div class="flex justify-end gap-3 mt-6">
@@ -976,7 +974,7 @@
                     </div>
                 </form>
             `;
-            openModal('🤖 AI创建病例', content);
+            openModal('✨ AI生成病例', content);
         }
 
         let generatedCaseData = null;
@@ -985,68 +983,18 @@
             e.preventDefault();
             
             const form = e.target;
-            const topic = form.topic.value;
+            const diseaseType = form.diseaseType.value;
             const difficulty = form.difficulty.value;
-            const ageRange = form.ageRange.value;
-            const requirements = form.requirements.value;
+            const special = form.special.value;
             
             // 显示加载状态
             document.getElementById('aiGenerating').classList.remove('hidden');
             document.getElementById('aiGenerateBtn').classList.add('hidden');
             document.getElementById('aiPreview').classList.add('hidden');
             
-            try {
-                // 构建提示词
-                const prompt = `请创建一个临床病例用于医学生训练。
-
-疾病主题：${topic}
-难度：${difficulty}
-${ageRange ? `患者年龄范围：${ageRange}` : ''}
-${requirements ? `特殊要求：${requirements}` : ''}
-
-请按以下JSON格式返回病例信息：
-{
-    "title": "病例标题",
-    "description": "病例描述（200-300字，包含主诉、现病史）",
-    "diagnosis": "正确诊断",
-    "difficulty": "${difficulty}",
-    "patient_info": {
-        "age": 数字,
-        "gender": "male" 或 "female"
-    },
-    "symptoms": ["症状1", "症状2", "症状3"],
-    "questions": [
-        {"question": "病史采集问题1", "answer": "对应答案"},
-        {"question": "病史采集问题2", "answer": "对应答案"}
-    ],
-    "examinations": [
-        {"name": "检查项目1", "result": "检查结果"}
-    ]
-}
-
-请确保：
-1. 病例描述要真实、详细，包含足够的诊断线索
-2. 症状列表要完整
-3. 病史采集问题要涵盖诊断关键点
-4. 检查项目要合理且有助于诊断`;
-
-                // 调用后端AI接口
-                const res = await fetch(`${API_BASE}/ai/generate-case`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${currentToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ prompt })
-                });
-                
-                if (!res.ok) {
-                    // 如果后端没有AI接口，使用模拟数据
-                    generatedCaseData = generateMockCase(topic, difficulty, ageRange, requirements);
-                } else {
-                    const data = await res.json();
-                    generatedCaseData = data.case;
-                }
+            // 模拟AI生成（使用模板）
+            setTimeout(() => {
+                generatedCaseData = generateMockCase(diseaseType, difficulty, special);
                 
                 // 显示预览
                 document.getElementById('aiGenerating').classList.add('hidden');
@@ -1060,73 +1008,97 @@ ${requirements ? `特殊要求：${requirements}` : ''}
                     <p><strong>患者：</strong>${generatedCaseData.patient_info?.age}岁 ${generatedCaseData.patient_info?.gender === 'male' ? '男' : '女'}</p>
                     <p><strong>描述：</strong>${generatedCaseData.description}</p>
                     <p><strong>症状：</strong>${generatedCaseData.symptoms?.join('、') || '-'}</p>
+                    <p><strong>问诊问题：</strong></p>
+                    <ul style="margin-left: 20px;">
+                        ${generatedCaseData.questions?.map((q, i) => `<li>${q} → ${generatedCaseData.answers?.[i] || '待回答'}</li>`).join('')}
+                    </ul>
                 `;
-                
-            } catch (err) {
-                document.getElementById('aiGenerating').classList.add('hidden');
-                document.getElementById('aiGenerateBtn').classList.remove('hidden');
-                alert('生成失败：' + err.message);
-            }
+            }, 1500);
         }
 
-        // 模拟AI生成病例（当后端没有AI接口时使用）
-        function generateMockCase(topic, difficulty, ageRange, requirements) {
+        function generateMockCase(diseaseType, difficulty, special) {
             const cases = {
-                '心肌梗死': {
-                    title: '急性胸痛患者的诊断与处理',
-                    description: '患者男性，55岁，因"突发胸痛2小时"就诊。患者2小时前无明显诱因出现胸骨后压榨性疼痛，向左肩及左上肢放射，伴大汗、恶心，无呕吐。疼痛持续不缓解，含服硝酸甘油无效。既往有高血压病史5年，吸烟史20年。查体：T 36.8℃，P 98次/分，R 20次/分，BP 150/95mmHg。神志清楚，痛苦面容，双肺呼吸音清，未闻及干湿啰音。心率98次/分，律齐，各瓣膜区未闻及病理性杂音。',
-                    diagnosis: '急性ST段抬高型心肌梗死',
-                    symptoms: ['胸骨后压榨性疼痛', '向左肩放射', '大汗', '恶心'],
-                    patient_info: { age: 55, gender: 'male' }
+                '心血管疾病': {
+                    title: '急性胸痛患者',
+                    description: '患者突发胸痛2小时，伴有出汗、恶心。既往有高血压病史。' + (special ? `合并${special}。` : ''),
+                    diagnosis: '急性心肌梗死',
+                    symptoms: ['胸痛', '出汗', '恶心', '呼吸困难'],
+                    questions: ['疼痛部位？', '疼痛性质？', '持续时间？', '既往病史？'],
+                    answers: ['胸骨后', '压榨性疼痛', '持续2小时', '高血压5年']
                 },
-                '糖尿病': {
-                    title: '意识障碍患者的急诊处理',
-                    description: '患者女性，62岁，因"意识模糊半天"由家属送入急诊。患者有2型糖尿病史10年，平时口服二甲双胍治疗，血糖控制不佳。近3天因感冒进食减少，仍按原剂量服药。今日上午家属发现患者精神萎靡、反应迟钝，逐渐出现意识模糊。查体：T 37.2℃，P 110次/分，R 24次/分，BP 130/80mmHg。嗜睡状态，呼之可睁眼，皮肤干燥，弹性差。双侧瞳孔等大等圆，对光反射灵敏。',
-                    diagnosis: '糖尿病酮症酸中毒',
-                    symptoms: ['意识模糊', '精神萎靡', '皮肤干燥', '呼吸深快'],
-                    patient_info: { age: 62, gender: 'female' }
+                '呼吸系统疾病': {
+                    title: '慢性咳嗽患者',
+                    description: '患者咳嗽3个月，咳白色黏痰，活动后气促。吸烟史20年。' + (special ? `合并${special}。` : ''),
+                    diagnosis: '慢性阻塞性肺疾病',
+                    symptoms: ['慢性咳嗽', '咳痰', '气促', '胸闷'],
+                    questions: ['咳嗽多久了？', '痰液性状？', '吸烟史？', '活动受限？'],
+                    answers: ['3个月', '白色黏痰', '吸烟20年', '上楼气促']
                 },
-                '肺炎': {
-                    title: '发热咳嗽患者的诊治',
-                    description: '患者男性，28岁，因"发热、咳嗽3天"就诊。患者3天前受凉后出现发热，体温最高39.5℃，伴畏寒、寒战，咳嗽，咳黄色脓痰，量中等，伴右侧胸痛，深呼吸及咳嗽时加重。无咯血，无呼吸困难。自服感冒药效果不佳。既往体健。查体：T 39.2℃，P 100次/分，R 22次/分，BP 120/80mmHg。急性病容，口唇无发绀，右下肺叩诊浊音，呼吸音减低，可闻及湿啰音。',
-                    diagnosis: '右下肺肺炎',
-                    symptoms: ['发热', '咳嗽', '咳黄痰', '胸痛'],
-                    patient_info: { age: 28, gender: 'male' }
+                '消化系统疾病': {
+                    title: '腹痛患者',
+                    description: '患者上腹痛1周，餐后加重，伴反酸嗳气。无黑便。' + (special ? `合并${special}。` : ''),
+                    diagnosis: '胃溃疡',
+                    symptoms: ['上腹痛', '反酸', '嗳气', '餐后痛'],
+                    questions: ['疼痛部位？', '与进食关系？', '有无黑便？', '既往胃病？'],
+                    answers: ['上腹部', '餐后加重', '无黑便', '偶有胃痛']
+                },
+                '神经系统疾病': {
+                    title: '头痛患者',
+                    description: '患者突发剧烈头痛，伴恶心呕吐，颈部僵硬。' + (special ? `合并${special}。` : ''),
+                    diagnosis: '蛛网膜下腔出血',
+                    symptoms: ['剧烈头痛', '恶心呕吐', '颈部僵硬', '畏光'],
+                    questions: ['头痛性质？', '发病急缓？', '颈部症状？', '意识状态？'],
+                    answers: ['炸裂样剧痛', '突发', '颈部僵硬', '清醒']
+                },
+                '内分泌系统疾病': {
+                    title: '多饮多尿患者',
+                    description: '患者多饮多尿3个月，体重下降5kg，乏力明显。' + (special ? `合并${special}。` : ''),
+                    diagnosis: '2型糖尿病',
+                    symptoms: ['多饮', '多尿', '体重下降', '乏力'],
+                    questions: ['症状多久？', '体重变化？', '家族史？', '饮食情况？'],
+                    answers: ['3个月', '下降5kg', '父亲糖尿病', '食欲亢进']
+                },
+                '泌尿系统疾病': {
+                    title: '血尿患者',
+                    description: '患者无痛性肉眼血尿2天，无尿频尿急。' + (special ? `合并${special}。` : ''),
+                    diagnosis: '膀胱肿瘤',
+                    symptoms: ['血尿', '无痛性', '肉眼可见', '无刺激症状'],
+                    questions: ['血尿特点？', '疼痛情况？', '排尿异常？', '既往病史？'],
+                    answers: ['全程血尿', '无痛', '无尿频尿急', '无特殊病史']
+                },
+                '血液系统疾病': {
+                    title: '贫血患者',
+                    description: '患者面色苍白、乏力2个月，月经量增多。' + (special ? `合并${special}。` : ''),
+                    diagnosis: '缺铁性贫血',
+                    symptoms: ['面色苍白', '乏力', '头晕', '心悸'],
+                    questions: ['症状多久？', '月经情况？', '饮食情况？', '黑便史？'],
+                    answers: ['2个月', '量增多', '偏食', '无黑便']
+                },
+                '感染性疾病': {
+                    title: '发热患者',
+                    description: '患者高热3天，伴寒战、咳嗽，近期有外出史。' + (special ? `合并${special}。` : ''),
+                    diagnosis: '肺炎',
+                    symptoms: ['高热', '寒战', '咳嗽', '胸痛'],
+                    questions: ['发热特点？', '伴随症状？', '接触史？', '用药史？'],
+                    answers: ['持续高热', '咳嗽咳痰', '近期外出', '未用药']
                 }
             };
             
-            // 根据主题匹配或随机选择
-            let caseData = null;
-            for (const key in cases) {
-                if (topic.includes(key)) {
-                    caseData = cases[key];
-                    break;
-                }
-            }
-            
-            if (!caseData) {
-                const keys = Object.keys(cases);
-                caseData = cases[keys[Math.floor(Math.random() * keys.length)]];
-            }
-            
-            // 根据年龄范围调整
-            if (ageRange) {
-                const [min, max] = ageRange.replace('+', '').split('-').map(Number);
-                caseData.patient_info.age = Math.floor(Math.random() * (max - min + 1)) + min;
-            }
+            const baseCase = cases[diseaseType] || cases['心血管疾病'];
             
             return {
-                ...caseData,
-                difficulty,
-                questions: [
-                    { question: '疼痛的性质和部位？', answer: '胸骨后压榨性疼痛，向左肩放射' },
-                    { question: '有无诱因？', answer: '无明显诱因，突发' },
-                    { question: '既往病史？', answer: '高血压5年，吸烟20年' }
-                ],
-                examinations: [
-                    { name: '心电图', result: 'ST段抬高' },
-                    { name: '心肌酶', result: 'CK-MB、肌钙蛋白升高' }
-                ]
+                title: special ? `${baseCase.title}（${special}）` : baseCase.title,
+                description: baseCase.description,
+                difficulty: difficulty,
+                diagnosis: baseCase.diagnosis,
+                patient_info: { 
+                    age: 45 + Math.floor(Math.random() * 40), 
+                    gender: Math.random() > 0.5 ? 'male' : 'female', 
+                    extra: special || '' 
+                },
+                symptoms: baseCase.symptoms,
+                questions: baseCase.questions,
+                answers: baseCase.answers
             };
         }
 
@@ -1137,7 +1109,7 @@ ${requirements ? `特殊要求：${requirements}` : ''}
                 await apiPost('/cases', generatedCaseData);
                 closeModal();
                 renderTeacherCases();
-                alert('病例创建成功！');
+                alert('AI病例生成成功！');
             } catch (err) {
                 alert('保存失败：' + err.message);
             }
@@ -1149,42 +1121,86 @@ ${requirements ? `特殊要求：${requirements}` : ''}
             const content = `
                 <form id="caseForm" onsubmit="saveCase(event, ${caseData?.id || 'null'})">
                     <div class="form-group">
-                        <label>标题 *</label>
-                        <input type="text" name="title" value="${caseData?.title || ''}" required>
+                        <label>病例标题 *</label>
+                        <input type="text" name="title" value="${caseData?.title || ''}" placeholder="如：急性胸痛病例" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>描述 *</label>
-                        <textarea name="description" rows="3" required>${caseData?.description || ''}</textarea>
+                        <label>病例描述 *</label>
+                        <textarea name="description" rows="3" placeholder="描述患者主诉和基本情况" required>${caseData?.description || ''}</textarea>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>难度</label>
-                            <select name="difficulty">
+                            <label>难度 *</label>
+                            <select name="difficulty" required>
                                 <option value="简单" ${caseData?.difficulty === '简单' ? 'selected' : ''}>简单</option>
-                                <option value="中等" ${caseData?.difficulty === '中等' ? 'selected' : ''}>中等</option>
+                                <option value="中等" ${!caseData || caseData?.difficulty === '中等' ? 'selected' : ''}>中等</option>
                                 <option value="困难" ${caseData?.difficulty === '困难' ? 'selected' : ''}>困难</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>诊断 *</label>
-                            <input type="text" name="diagnosis" value="${caseData?.diagnosis || ''}" required>
+                            <label>正确诊断 *</label>
+                            <input type="text" name="diagnosis" value="${caseData?.diagnosis || ''}" placeholder="如：急性心肌梗死" required>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>患者年龄</label>
-                            <input type="number" name="patient_age" value="${caseData?.patient_info?.age || ''}">
+                            <label>患者年龄 *</label>
+                            <input type="number" name="patient_age" value="${caseData?.patient_info?.age || '65'}" required>
                         </div>
                         <div class="form-group">
-                            <label>患者性别</label>
-                            <select name="patient_gender">
-                                <option value="male" ${caseData?.patient_info?.gender === 'male' ? 'selected' : ''}>男</option>
+                            <label>患者性别 *</label>
+                            <select name="patient_gender" required>
+                                <option value="male" ${!caseData || caseData?.patient_info?.gender === 'male' ? 'selected' : ''}>男</option>
                                 <option value="female" ${caseData?.patient_info?.gender === 'female' ? 'selected' : ''}>女</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>其他信息</label>
+                        <input type="text" name="patient_extra" value="${caseData?.patient_info?.extra || ''}" placeholder="如：体重70kg，身高175cm">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>症状</label>
+                        <div id="symptomsList">
+                            ${(caseData?.symptoms || []).map(s => `
+                                <div class="array-item" style="display:flex;gap:8px;margin-bottom:8px;">
+                                    <input type="text" class="symptom-input" value="${s}" placeholder="症状" style="flex:1;">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">删除</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addArrayItem('symptomsList', 'symptom-input', '症状')">+ 添加症状</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>问诊问题</label>
+                        <div id="questionsList">
+                            ${(caseData?.questions || []).map(q => `
+                                <div class="array-item" style="display:flex;gap:8px;margin-bottom:8px;">
+                                    <input type="text" class="question-input" value="${typeof q === 'object' ? q.question : q}" placeholder="问题" style="flex:1;">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">删除</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addArrayItem('questionsList', 'question-input', '问题')">+ 添加问题</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>参考答案</label>
+                        <div id="answersList">
+                            ${(caseData?.answers || []).map(a => `
+                                <div class="array-item" style="display:flex;gap:8px;margin-bottom:8px;">
+                                    <input type="text" class="answer-input" value="${typeof a === 'object' ? a.answer : a}" placeholder="答案" style="flex:1;">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">删除</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addArrayItem('answersList', 'answer-input', '答案')">+ 添加答案</button>
                     </div>
                     
                     <div class="flex justify-end gap-3 mt-6">
@@ -1196,9 +1212,25 @@ ${requirements ? `特殊要求：${requirements}` : ''}
             openModal(isEdit ? '编辑病例' : '创建病例', content);
         }
 
+        function addArrayItem(containerId, inputClass, placeholder) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'array-item';
+            div.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+            div.innerHTML = `
+                <input type="text" class="${inputClass}" placeholder="${placeholder}" style="flex:1;">
+                <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">删除</button>
+            `;
+            container.appendChild(div);
+        }
+
         async function saveCase(e, id) {
             e.preventDefault();
             const form = e.target;
+            
+            const symptoms = Array.from(document.querySelectorAll('.symptom-input')).map(i => i.value).filter(v => v);
+            const questions = Array.from(document.querySelectorAll('.question-input')).map(i => i.value).filter(v => v);
+            const answers = Array.from(document.querySelectorAll('.answer-input')).map(i => i.value).filter(v => v);
             
             const data = {
                 title: form.title.value,
@@ -1207,11 +1239,12 @@ ${requirements ? `特殊要求：${requirements}` : ''}
                 diagnosis: form.diagnosis.value,
                 patient_info: {
                     age: parseInt(form.patient_age.value) || 0,
-                    gender: form.patient_gender.value
+                    gender: form.patient_gender.value,
+                    extra: form.patient_extra.value
                 },
-                symptoms: [],
-                questions: [],
-                answers: []
+                symptoms,
+                questions,
+                answers
             };
             
             try {
