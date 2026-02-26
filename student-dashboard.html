@@ -5,18 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学生中心 - 临床思维训练系统</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #f5f7fa;
             min-height: 100vh;
         }
-
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -25,177 +19,144 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .header .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
+        .header h1 { font-size: 20px; font-weight: 600; }
+        .header .user-info { display: flex; align-items: center; gap: 20px; }
         .header .logout-btn {
             background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
+            border: none; color: white; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer;
         }
-
-        .header .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px;
-        }
-
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px; }
         .welcome {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 16px;
-            margin-bottom: 30px;
+            color: white; padding: 30px;
+            border-radius: 16px; margin-bottom: 30px;
         }
-
-        .welcome h2 {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-
-        .welcome p {
-            opacity: 0.9;
-        }
-
+        .welcome h2 { font-size: 24px; margin-bottom: 8px; }
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; margin-bottom: 30px;
         }
-
         .stat-card {
-            background: white;
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            text-align: center;
+            background: white; padding: 24px; border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;
         }
-
-        .stat-card .value {
-            font-size: 36px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 8px;
-        }
-
-        .stat-card .label {
-            color: #666;
-            font-size: 14px;
-        }
-
+        .stat-card .value { font-size: 36px; font-weight: 700; color: #667eea; margin-bottom: 8px; }
+        .stat-card .label { color: #666; font-size: 14px; }
         .section {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: white; border-radius: 16px; padding: 24px;
+            margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-
-        .section h2 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
+        .section h2 { font-size: 18px; color: #333; margin-bottom: 20px; }
         .case-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
-
         .case-card {
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
-            transition: all 0.3s;
-            cursor: pointer;
+            border: 2px solid #e0e0e0; border-radius: 12px;
+            padding: 20px; transition: all 0.3s; cursor: pointer;
         }
-
         .case-card:hover {
-            border-color: #667eea;
-            transform: translateY(-4px);
+            border-color: #667eea; transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
         }
-
-        .case-card h3 {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .case-card p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .case-card .meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .case-card h3 { font-size: 16px; color: #333; margin-bottom: 8px; }
+        .case-card p { font-size: 14px; color: #666; margin-bottom: 12px; line-height: 1.5; }
+        .case-card .meta { display: flex; justify-content: space-between; align-items: center; }
         .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
+            display: inline-block; padding: 4px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: 500;
         }
-
-        .badge-blue {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-
-        .badge-green {
-            background: #e8f5e9;
-            color: #388e3c;
-        }
-
+        .badge-blue { background: #e3f2fd; color: #1976d2; }
+        .badge-green { background: #e8f5e9; color: #388e3c; }
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: transform 0.2s;
+            color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-size: 13px;
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
+        .btn:hover { opacity: 0.9; }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        .empty-state .icon { font-size: 64px; margin-bottom: 16px; }
+        
+        /* Training Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            z-index: 1000; align-items: center; justify-content: center;
         }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white; border-radius: 16px; padding: 30px;
+            width: 90%; max-width: 800px; max-height: 90vh;
+            overflow-y: auto;
         }
-
-        .empty-state .icon {
-            font-size: 64px;
-            margin-bottom: 16px;
+        .modal-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 20px;
+        }
+        .modal-header h3 { font-size: 20px; }
+        .close-btn {
+            background: none; border: none; font-size: 24px;
+            cursor: pointer; color: #666;
+        }
+        .chat-container {
+            background: #f8f9fa; border-radius: 12px;
+            padding: 20px; margin-bottom: 20px;
+            max-height: 400px; overflow-y: auto;
+        }
+        .chat-message {
+            margin-bottom: 16px; display: flex;
+            flex-direction: column;
+        }
+        .chat-message.user { align-items: flex-end; }
+        .chat-message.ai { align-items: flex-start; }
+        .chat-bubble {
+            max-width: 80%; padding: 12px 16px;
+            border-radius: 16px; font-size: 14px;
+            line-height: 1.5;
+        }
+        .chat-message.user .chat-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border-bottom-right-radius: 4px;
+        }
+        .chat-message.ai .chat-bubble {
+            background: white; color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chat-time { font-size: 11px; color: #999; margin-top: 4px; }
+        .input-area {
+            display: flex; gap: 12px; margin-bottom: 20px;
+        }
+        .input-area input {
+            flex: 1; padding: 12px 16px;
+            border: 2px solid #e0e0e0; border-radius: 8px;
+            font-size: 14px;
+        }
+        .input-area input:focus { outline: none; border-color: #667eea; }
+        .diagnosis-area {
+            border-top: 2px solid #eee; padding-top: 20px;
+        }
+        .diagnosis-area textarea {
+            width: 100%; padding: 12px; border: 2px solid #e0e0e0;
+            border-radius: 8px; font-size: 14px; min-height: 80px;
+            margin-bottom: 12px; resize: vertical;
+        }
+        .patient-info {
+            background: #e3f2fd; padding: 16px;
+            border-radius: 8px; margin-bottom: 20px;
+        }
+        .patient-info h4 { color: #1976d2; margin-bottom: 8px; }
+        .patient-info p { color: #333; font-size: 14px; line-height: 1.6; }
+        .symptoms-list {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            margin-bottom: 20px;
+        }
+        .symptom-tag {
+            background: #fff3e0; color: #f57c00;
+            padding: 4px 12px; border-radius: 16px;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -211,7 +172,7 @@
     <div class="container">
         <div class="welcome">
             <h2>欢迎回来，👋</h2>
-            <p>继续你的临床思维训练之旅，提升诊断能力</p>
+            <p>选择下方病例开始训练，提升你的临床诊断能力</p>
         </div>
 
         <div class="stats-grid">
@@ -254,13 +215,46 @@
         </div>
     </div>
 
+    <!-- Training Modal -->
+    <div class="modal" id="trainingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="trainingTitle">病例训练</h3>
+                <button class="close-btn" onclick="closeTrainingModal()">&times;</button>
+            </div>
+            
+            <div class="patient-info" id="patientInfo"></div>
+            
+            <div class="symptoms-list" id="symptomsTags"></div>
+            
+            <div class="chat-container" id="chatContainer">
+                <div class="chat-message ai">
+                    <div class="chat-bubble">你好！我是AI助手，请开始你的问诊。</div>
+                    <div class="chat-time">现在</div>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <input type="text" id="chatInput" placeholder="输入你的问题..."
+                       onkeypress="if(event.key==='Enter')sendMessage()">
+                <button class="btn" onclick="sendMessage()">发送</button>
+            </div>
+            
+            <div class="diagnosis-area">
+                <h4>📝 提交诊断</h4>
+                <textarea id="diagnosisInput" placeholder="请输入你的最终诊断..."></textarea>
+                <button class="btn" onclick="submitDiagnosis()">提交诊断</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = 'https://clinical-thinking-backend.onrender.com';
         const token = localStorage.getItem('token');
+        let currentSessionId = null;
+        let currentCase = null;
         
-        if (!token) {
-            window.location.href = '/index.html';
-        }
+        if (!token) window.location.href = '/index.html';
 
         const username = localStorage.getItem('username') || '学生';
         document.getElementById('username').textContent = username;
@@ -271,62 +265,195 @@
             window.location.href = '/index.html';
         }
 
+        function openTrainingModal() {
+            document.getElementById('trainingModal').classList.add('show');
+        }
+        function closeTrainingModal() {
+            document.getElementById('trainingModal').classList.remove('show');
+            currentSessionId = null;
+            currentCase = null;
+            document.getElementById('chatContainer').innerHTML = `
+                <div class="chat-message ai">
+                    <div class="chat-bubble">你好！我是AI助手，请开始你的问诊。</div>
+                    <div class="chat-time">现在</div>
+                </div>
+            `;
+            document.getElementById('diagnosisInput').value = '';
+        }
+
         async function loadStats() {
             try {
-                const response = await fetch(`${API_BASE}/stats/student`, {
+                const res = await fetch(`${API_BASE}/stats/student`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const data = await response.json();
-                
+                const data = await res.json();
                 document.getElementById('totalSessions').textContent = data.total_sessions;
                 document.getElementById('completedSessions').textContent = data.completed_sessions;
                 document.getElementById('averageScore').textContent = data.average_score ? data.average_score.toFixed(0) : '-';
                 document.getElementById('casesAttempted').textContent = data.total_cases_attempted;
-            } catch (error) {
-                console.error('加载统计失败:', error);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function loadCases() {
             try {
-                const response = await fetch(`${API_BASE}/cases`, {
+                const res = await fetch(`${API_BASE}/cases`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const cases = await response.json();
-                
+                const cases = await res.json();
                 const container = document.getElementById('casesList');
-                if (cases.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="grid-column: 1/-1;">
-                            <div class="icon">📖</div>
-                            <p>暂无可用病例</p>
+                container.innerHTML = cases.length ? cases.map(c => `
+                    <div class="case-card" onclick="startTraining(${c.id})">
+                        <h3>${c.title}</h3>
+                        <p>${c.description.substring(0, 60)}...</p>
+                        <div class="meta">
+                            <span class="badge badge-blue">${c.difficulty}</span>
+                            <button class="btn">开始训练</button>
                         </div>
+                    </div>
+                `).join('') : '<div class="empty-state" style="grid-column:1/-1"><div class="icon">📖</div><p>暂无可用病例</p></div>';
+            } catch (e) { console.error(e); }
+        }
+
+        async function startTraining(caseId) {
+            try {
+                const res = await fetch(`${API_BASE}/sessions`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ case_id: caseId })
+                });
+                if (res.ok) {
+                    const session = await res.json();
+                    currentSessionId = session.id;
+                    currentCase = session.case;
+                    
+                    document.getElementById('trainingTitle').textContent = session.case.title;
+                    
+                    // 显示患者信息
+                    const patientInfo = session.case.patient_info || {};
+                    document.getElementById('patientInfo').innerHTML = `
+                        <h4>👤 患者信息</h4>
+                        <p>${session.case.description}</p>
+                        ${patientInfo.age ? `<p>年龄: ${patientInfo.age}岁 | 性别: ${patientInfo.gender === 'male' ? '男' : '女'}</p>` : ''}
                     `;
-                } else {
-                    container.innerHTML = cases.map(c => `
-                        <div class="case-card" onclick="startCase(${c.id})">
-                            <h3>${c.title}</h3>
-                            <p>${c.description.substring(0, 60)}...</p>
-                            <div class="meta">
-                                <span class="badge badge-blue">${c.difficulty}</span>
-                                <button class="btn">开始训练</button>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('加载病例失败:', error);
+                    
+                    // 显示症状
+                    const symptoms = session.case.symptoms || [];
+                    document.getElementById('symptomsTags').innerHTML = symptoms.map(s => 
+                        `<span class="symptom-tag">${s}</span>`
+                    ).join('');
+                    
+                    openTrainingModal();
+                } else alert('开始训练失败');
+            } catch (err) { alert('网络错误'); }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message || !currentSessionId) return;
+            
+            // 添加用户消息
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            try {
+                await fetch(`${API_BASE}/dialogues`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        message: message,
+                        role: 'user'
+                    })
+                });
+                
+                // 模拟AI回复（实际应该调用AI接口）
+                setTimeout(() => {
+                    const aiResponse = getAIResponse(message);
+                    addChatMessage(aiResponse, 'ai');
+                    
+                    fetch(`${API_BASE}/dialogues`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            session_id: currentSessionId,
+                            message: aiResponse,
+                            role: 'ai'
+                        })
+                    });
+                }, 1000);
+            } catch (err) { console.error(err); }
+        }
+
+        function getAIResponse(question) {
+            const responses = {
+                '疼痛': '患者描述疼痛位于胸骨后，呈压榨性，疼痛评分8分。',
+                '病史': '患者有高血压病史5年，规律服药。',
+                '检查': '心电图显示ST段抬高，心肌酶谱升高。',
+                '症状': '患者伴有呼吸困难、出汗、恶心等症状。'
+            };
+            for (let key in responses) {
+                if (question.includes(key)) return responses[key];
             }
+            return '请继续询问更多细节，或根据已有信息进行诊断。';
+        }
+
+        function addChatMessage(message, role) {
+            const container = document.getElementById('chatContainer');
+            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            container.innerHTML += `
+                <div class="chat-message ${role}">
+                    <div class="chat-bubble">${message}</div>
+                    <div class="chat-time">${time}</div>
+                </div>
+            `;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function submitDiagnosis() {
+            const diagnosis = document.getElementById('diagnosisInput').value.trim();
+            if (!diagnosis || !currentSessionId) {
+                alert('请输入诊断');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/sessions/${currentSessionId}/diagnosis`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ diagnosis })
+                });
+                
+                if (res.ok) {
+                    const result = await res.json();
+                    alert(`诊断提交成功！\n你的诊断: ${diagnosis}\n得分: ${result.score}分`);
+                    closeTrainingModal();
+                    loadStats();
+                    loadSessions();
+                } else alert('提交失败');
+            } catch (err) { alert('网络错误'); }
         }
 
         async function loadSessions() {
             try {
-                const response = await fetch(`${API_BASE}/sessions`, {
+                const res = await fetch(`${API_BASE}/sessions`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const sessions = await response.json();
-                
+                const sessions = await res.json();
                 const container = document.getElementById('sessionsList');
+                
                 if (sessions.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
@@ -336,65 +463,36 @@
                     `;
                 } else {
                     container.innerHTML = `
-                        <table style="width: 100%;">
+                        <table style="width:100%">
                             <thead>
                                 <tr>
-                                    <th style="text-align: left; padding: 12px;">病例</th>
-                                    <th style="text-align: left; padding: 12px;">状态</th>
-                                    <th style="text-align: left; padding: 12px;">得分</th>
-                                    <th style="text-align: left; padding: 12px;">时间</th>
+                                    <th style="text-align:left;padding:12px">病例</th>
+                                    <th style="text-align:left;padding:12px">状态</th>
+                                    <th style="text-align:left;padding:12px">得分</th>
+                                    <th style="text-align:left;padding:12px">时间</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${sessions.slice(0, 5).map(s => `
                                     <tr>
-                                        <td style="padding: 12px;">${s.case ? s.case.title : '未知病例'}</td>
-                                        <td style="padding: 12px;">
+                                        <td style="padding:12px">${s.case ? s.case.title : '未知病例'}</td>
+                                        <td style="padding:12px">
                                             <span class="badge ${s.status === 'completed' ? 'badge-green' : 'badge-blue'}">
                                                 ${s.status === 'completed' ? '已完成' : '进行中'}
                                             </span>
                                         </td>
-                                        <td style="padding: 12px;">${s.score !== null ? s.score + '分' : '-'}</td>
-                                        <td style="padding: 12px;">${new Date(s.started_at).toLocaleDateString()}</td>
+                                        <td style="padding:12px">${s.score !== null ? s.score + '分' : '-'}</td>
+                                        <td style="padding:12px">${new Date(s.started_at).toLocaleDateString()}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
                     `;
                 }
-            } catch (error) {
-                console.error('加载会话失败:', error);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        async function startCase(caseId) {
-            try {
-                const response = await fetch(`${API_BASE}/sessions`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ case_id: caseId })
-                });
-                
-                if (response.ok) {
-                    const session = await response.json();
-                    alert(`已开始训练！会话ID: ${session.id}`);
-                    // 这里可以跳转到训练页面
-                } else {
-                    alert('开始训练失败');
-                }
-            } catch (error) {
-                console.error('开始训练失败:', error);
-                alert('网络错误');
-            }
-        }
-
-        // 加载数据
-        loadStats();
-        loadCases();
-        loadSessions();
+        loadStats(); loadCases(); loadSessions();
     </script>
 </body>
 </html>
