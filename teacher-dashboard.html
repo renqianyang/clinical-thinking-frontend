@@ -705,7 +705,11 @@
                         <td><span class="badge badge-blue">${c.difficulty}</span></td>
                         <td>${c.diagnosis}</td>
                         <td>${new Date(c.created_at).toLocaleDateString()}</td>
-                        <td><button class="btn" style="padding:6px 12px;font-size:12px" onclick="viewCase(${c.id})">查看</button></td>
+                        <td>
+                            <button class="btn" style="padding:4px 8px;font-size:12px;margin-right:4px" onclick="viewCase(${c.id})">查看</button>
+                            <button class="btn" style="padding:4px 8px;font-size:12px;margin-right:4px;background:#4caf50" onclick="editCase(${c.id})">编辑</button>
+                            <button class="btn btn-danger" style="padding:4px 8px;font-size:12px" onclick="deleteCase(${c.id})">删除</button>
+                        </td>
                     </tr>
                 `).join('') : '<tr><td colspan="5" style="text-align:center;color:#999">暂无病例</td></tr>';
             } catch (e) { console.error(e); }
@@ -789,7 +793,11 @@
                         <td>${c.name}</td>
                         <td>${c.students ? c.students.length : 0} 人</td>
                         <td>${new Date(c.created_at).toLocaleDateString()}</td>
-                        <td><button class="btn" style="padding:6px 12px;font-size:12px" onclick="openManageClassModal(${c.id})">管理</button></td>
+                        <td>
+                            <button class="btn" style="padding:4px 8px;font-size:12px;margin-right:4px" onclick="openManageClassModal(${c.id})">管理</button>
+                            <button class="btn" style="padding:4px 8px;font-size:12px;margin-right:4px;background:#4caf50" onclick="editClass(${c.id}, '${c.name}')">编辑</button>
+                            <button class="btn btn-danger" style="padding:4px 8px;font-size:12px" onclick="deleteClass(${c.id})">删除</button>
+                        </td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999">暂无班级</td></tr>';
             } catch (e) { console.error(e); }
@@ -859,6 +867,146 @@
                     loadClasses();
                     loadStats();
                 } else alert('移除失败');
+            } catch (err) { alert('网络错误'); }
+        }
+
+        // Edit and Delete Case
+        let editingCaseId = null;
+
+        async function editCase(caseId) {
+            editingCaseId = caseId;
+            try {
+                const res = await fetch(`${API_BASE}/cases/${caseId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const c = await res.json();
+                
+                // Fill form
+                document.getElementById('caseTitle').value = c.title;
+                document.getElementById('caseDesc').value = c.description;
+                document.getElementById('caseDifficulty').value = c.difficulty;
+                document.getElementById('caseDiagnosis').value = c.diagnosis;
+                
+                const patientInfo = c.patient_info || {};
+                document.getElementById('patientAge').value = patientInfo.age || '';
+                document.getElementById('patientGender').value = patientInfo.gender || 'male';
+                document.getElementById('patientExtra').value = patientInfo.extra || '';
+                
+                // Clear and fill arrays
+                document.getElementById('symptomsList').innerHTML = '';
+                (c.symptoms || []).forEach(s => addSymptom(s));
+                
+                document.getElementById('questionsList').innerHTML = '';
+                (c.questions || []).forEach(q => addQuestion(q));
+                
+                document.getElementById('answersList').innerHTML = '';
+                (c.answers || []).forEach(a => addAnswer(a));
+                
+                // Change form submit handler
+                document.getElementById('caseForm').onsubmit = submitEditCase;
+                document.querySelector('#caseModal h3').textContent = '编辑病例';
+                
+                openCaseModal();
+            } catch (err) {
+                alert('加载失败');
+            }
+        }
+
+        async function submitEditCase(e) {
+            e.preventDefault();
+            const symptoms = Array.from(document.querySelectorAll('#symptomsList input')).map(i => i.value).filter(v => v);
+            const questions = Array.from(document.querySelectorAll('#questionsList input')).map(i => i.value).filter(v => v);
+            const answers = Array.from(document.querySelectorAll('#answersList input')).map(i => i.value).filter(v => v);
+            
+            const patientInfo = {
+                age: parseInt(document.getElementById('patientAge').value),
+                gender: document.getElementById('patientGender').value,
+                extra: document.getElementById('patientExtra').value
+            };
+            
+            const data = {
+                title: document.getElementById('caseTitle').value,
+                description: document.getElementById('caseDesc').value,
+                difficulty: document.getElementById('caseDifficulty').value,
+                diagnosis: document.getElementById('caseDiagnosis').value,
+                patient_info: patientInfo,
+                symptoms, questions, answers
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/cases/${editingCaseId}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    closeCaseModal();
+                    loadCases();
+                    editingCaseId = null;
+                    document.getElementById('caseForm').onsubmit = submitCase;
+                    document.querySelector('#caseModal h3').textContent = '创建新病例';
+                } else alert('更新失败');
+            } catch (err) { alert('网络错误'); }
+        }
+
+        async function deleteCase(caseId) {
+            if (!confirm('确定删除该病例吗？此操作不可恢复。')) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/cases/${caseId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    loadCases();
+                    loadStats();
+                    alert('删除成功');
+                } else alert('删除失败');
+            } catch (err) { alert('网络错误'); }
+        }
+
+        // Edit and Delete Class
+        let editingClassId = null;
+
+        function editClass(classId, className) {
+            editingClassId = classId;
+            document.getElementById('className').value = className;
+            document.getElementById('classForm').onsubmit = submitEditClass;
+            document.querySelector('#classModal h3').textContent = '编辑班级';
+            openClassModal();
+        }
+
+        async function submitEditClass(e) {
+            e.preventDefault();
+            try {
+                const res = await fetch(`${API_BASE}/classes/${editingClassId}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: document.getElementById('className').value })
+                });
+                if (res.ok) {
+                    closeClassModal();
+                    loadClasses();
+                    editingClassId = null;
+                    document.getElementById('classForm').onsubmit = submitClass;
+                    document.querySelector('#classModal h3').textContent = '创建新班级';
+                } else alert('更新失败');
+            } catch (err) { alert('网络错误'); }
+        }
+
+        async function deleteClass(classId) {
+            if (!confirm('确定删除该班级吗？班级中的学生将被移除。此操作不可恢复。')) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/classes/${classId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    loadClasses();
+                    loadStats();
+                    alert('删除成功');
+                } else alert('删除失败');
             } catch (err) { alert('网络错误'); }
         }
 
