@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>临床思维训练系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .role-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .role-option:hover {
+            border-color: #667eea;
+        }
+
+        .role-option.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .role-option .icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .role-option .text {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .demo-accounts {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .demo-accounts h3 {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .demo-account {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .demo-account:hover {
+            background: #e9ecef;
+        }
+
+        .demo-account .role {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 50px;
+        }
+
+        .demo-account .credentials {
+            color: #666;
+            margin-left: 10px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <div class="logo-icon">🏥</div>
+                <h1>临床思维训练系统</h1>
+                <p>Clinical Thinking Training System</p>
+            </div>
+
+            <div class="error-message" id="errorMsg"></div>
+
+            <form id="loginForm">
+                <div class="role-selector">
+                    <div class="role-option active" data-role="teacher">
+                        <div class="icon">👨‍⚕️</div>
+                        <div class="text">教师</div>
+                    </div>
+                    <div class="role-option" data-role="student">
+                        <div class="icon">👨‍🎓</div>
+                        <div class="text">学生</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" placeholder="请输入用户名" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" placeholder="请输入密码" required>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    登录
+                </button>
+            </form>
+
+            <div class="demo-accounts">
+                <h3>测试账号</h3>
+                <div class="demo-account" onclick="fillDemo('teacher', 'teacher', 'teacher123')">
+                    <span class="role">教师</span>
+                    <span class="credentials">teacher / teacher123</span>
+                </div>
+                <div class="demo-account" onclick="fillDemo('student', 'student', 'student123')">
+                    <span class="role">学生</span>
+                    <span class="credentials">student / student123</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://clinical-thinking-backend.onrender.com';
+        let selectedRole = 'teacher';
+
+        // 角色选择
+        document.querySelectorAll('.role-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                selectedRole = this.dataset.role;
+            });
+        });
+
+        // 填充测试账号
+        function fillDemo(role, username, password) {
+            document.querySelectorAll('.role-option').forEach(o => {
+                o.classList.toggle('active', o.dataset.role === role);
+            });
+            selectedRole = role;
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+        }
+
+        // 登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMsg');
+
+            // 显示加载状态
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '登录中<span class="loading"></span>';
+            errorMsg.classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_BASE}/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // 保存 token
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('role', selectedRole);
+                    
+                    // 跳转到对应页面
+                    if (selectedRole === 'teacher') {
+                        window.location.href = '/teacher-dashboard.html';
+                    } else {
+                        window.location.href = '/student-dashboard.html';
+                    }
+                } else {
+                    throw new Error(data.detail || '登录失败');
+                }
+            } catch (error) {
+                errorMsg.textContent = error.message || '网络错误，请稍后重试';
+                errorMsg.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '登录';
+            }
+        });
+    </script>
+</body>
+</html>
