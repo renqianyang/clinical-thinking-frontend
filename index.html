@@ -8,28 +8,264 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        
+        /* Header */
+        .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header h1 { font-size: 20px; font-weight: 600; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .gap-4 { gap: 16px; }
+        .gap-6 { gap: 24px; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            height: fit-content;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .nav-item:hover { background: #f5f7fa; color: #667eea; }
+        .nav-item.active { background: #eef2ff; color: #667eea; font-weight: 500; }
+
+        /* Main Content */
+        .main-content { flex: 1; }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card-title { font-size: 18px; font-weight: 600; color: #333; }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: #666; font-size: 14px; margin-top: 8px; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-secondary:hover { background: #e0e0e0; }
+        .btn-danger { background: #ff4444; color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 13px; }
+
+        /* Tables */
+        .table-container { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            color: #666;
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        td { color: #333; font-size: 14px; }
+        tr:hover { background: #f9fafb; }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-blue { background: #e3f2fd; color: #1976d2; }
+        .badge-green { background: #e8f5e9; color: #388e3c; }
+        .badge-yellow { background: #fff3e0; color: #f57c00; }
+        .badge-red { background: #ffebee; color: #c62828; }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title { font-size: 20px; font-weight: 600; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* Array Inputs */
+        .array-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .array-item input { flex: 1; }
+
+        /* Login Page */
+        .login-page {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 420px;
-            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         .login-card {
             background: white;
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .logo {
+        .login-logo {
             text-align: center;
             margin-bottom: 30px;
         }
-        .logo-icon {
+        .login-logo-icon {
             width: 80px;
             height: 80px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -40,217 +276,839 @@
             margin: 0 auto 20px;
             font-size: 40px;
         }
-        .logo h1 {
-            color: #333;
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .logo p {
-            color: #666;
-            font-size: 14px;
-            margin-top: 8px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .role-selector {
+        .login-logo h1 { font-size: 24px; color: #333; }
+        .login-logo p { color: #666; font-size: 14px; margin-top: 8px; }
+
+        /* Training Page */
+        .training-layout {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            height: calc(100vh - 70px);
         }
-        .role-option {
+        .training-sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #eee;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .training-main {
             flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            background: #f9fafb;
         }
-        .role-option:hover {
-            border-color: #667eea;
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
         }
-        .role-option.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
+        .chat-message {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
         }
-        .role-option .icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-        .role-option .text {
-            font-size: 13px;
-            font-weight: 500;
-        }
-        .btn-login {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-        .btn-login:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .error-message {
-            background: #fee;
-            color: #c33;
+        .chat-message.user { align-items: flex-end; }
+        .chat-message.ai { align-items: flex-start; }
+        .chat-bubble {
+            max-width: 70%;
             padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            border-radius: 16px;
             font-size: 14px;
-            display: none;
+            line-height: 1.5;
         }
-        .error-message.show {
-            display: block;
+        .chat-message.user .chat-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
         }
+        .chat-message.ai .chat-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chat-input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 12px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .tab.active { background: white; color: #667eea; }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-4 { margin-top: 16px; }
+        .mb-4 { margin-bottom: 16px; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .w-full { width: 100%; }
+
+        /* Loading */
         .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+            border: 3px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
-            vertical-align: middle;
+            animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Error message */
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
         }
+        .error-message.show { display: block; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Login Page -->
+    <div id="loginPage" class="login-page">
         <div class="login-card">
-            <div class="logo">
-                <div class="logo-icon">🏥</div>
+            <div class="login-logo">
+                <div class="login-logo-icon">🏥</div>
                 <h1>临床思维训练系统</h1>
                 <p>Clinical Thinking Training System</p>
             </div>
 
-            <div class="error-message" id="errorMsg"></div>
+            <div class="error-message" id="loginError"></div>
 
             <form id="loginForm">
-                <div class="role-selector">
-                    <div class="role-option active" data-role="teacher">
-                        <div class="icon">👨‍⚕️</div>
-                        <div class="text">教师</div>
-                    </div>
-                    <div class="role-option" data-role="student">
-                        <div class="icon">👨‍🎓</div>
-                        <div class="text">学生</div>
-                    </div>
+                <div class="tabs">
+                    <div class="tab active" data-role="teacher">👨‍⚕️ 教师</div>
+                    <div class="tab" data-role="student">👨‍🎓 学生</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="username">用户名</label>
-                    <input type="text" id="username" placeholder="请输入用户名" required>
+                    <label>用户名</label>
+                    <input type="text" id="loginUsername" placeholder="请输入用户名" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">密码</label>
-                    <input type="password" id="password" placeholder="请输入密码" required>
+                    <label>密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码" required>
                 </div>
 
-                <button type="submit" class="btn-login" id="loginBtn">
+                <button type="submit" class="btn btn-primary w-full" id="loginBtn">
                     登录
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <span style="font-size: 24px;">🏥</span>
+                <h1>临床思维训练系统</h1>
+            </div>
+            <div class="header-right">
+                <span id="userName"></span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </header>
+
+        <div class="container flex gap-6">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav id="sidebarNav">
+                    <!-- Navigation items will be inserted here -->
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content" id="mainContent">
+                <!-- Content will be inserted here -->
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
     <script>
+        // ==================== CONFIG ====================
         const API_BASE = 'https://clinical-thinking-backend.onrender.com';
-        let selectedRole = 'teacher';
+        let currentUser = null;
+        let currentToken = null;
+        let currentPage = 'dashboard';
 
-        // 角色选择
-        document.querySelectorAll('.role-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
-                this.classList.add('active');
-                selectedRole = this.dataset.role;
-            });
-        });
+        // ==================== AUTH ====================
+        function init() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                currentToken = token;
+                currentUser = JSON.parse(user);
+                showMainApp();
+            } else {
+                showLoginPage();
+            }
+        }
 
-        // 登录表单提交
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        function showLoginPage() {
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('userName').textContent = currentUser.full_name;
+            renderSidebar();
+            navigate('dashboard');
+        }
+
+        function logout() {
+            localStorage.clear();
+            currentUser = null;
+            currentToken = null;
+            showLoginPage();
+        }
+
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorMsg = document.getElementById('errorMsg');
-
-            // 显示加载状态
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '登录中<span class="loading"></span>';
-            errorMsg.classList.remove('show');
-
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const role = document.querySelector('.tab.active').dataset.role;
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+            
+            btn.innerHTML = '登录中<span class="loading"></span>';
+            btn.disabled = true;
+            errorDiv.classList.remove('show');
+            
             try {
-                const response = await fetch(`${API_BASE}/token`, {
+                const res = await fetch(`${API_BASE}/token`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
                 });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // 保存 token
-                    localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('username', username);
-                    localStorage.setItem('role', selectedRole);
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    currentToken = data.access_token;
+                    localStorage.setItem('token', currentToken);
                     
-                    // 跳转到对应页面
-                    if (selectedRole === 'teacher') {
-                        window.location.href = '/teacher-dashboard.html';
-                    } else {
-                        window.location.href = '/student-dashboard.html';
-                    }
+                    const userRes = await fetch(`${API_BASE}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${currentToken}` }
+                    });
+                    
+                    currentUser = await userRes.json();
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    showMainApp();
                 } else {
                     throw new Error(data.detail || '登录失败');
                 }
-            } catch (error) {
-                errorMsg.textContent = error.message || '网络错误，请稍后重试';
-                errorMsg.classList.add('show');
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '登录';
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.classList.add('show');
             }
+            
+            btn.innerHTML = '登录';
+            btn.disabled = false;
         });
+
+        // Role tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // ==================== NAVIGATION ====================
+        function renderSidebar() {
+            const nav = document.getElementById('sidebarNav');
+            const isTeacher = currentUser.role === 'teacher';
+            
+            const items = isTeacher ? [
+                { id: 'dashboard', label: '📊 首页', page: 'dashboard' },
+                { id: 'cases', label: '📚 病例管理', page: 'teacherCases' },
+                { id: 'classes', label: '👥 班级管理', page: 'teacherClasses' },
+                { id: 'stats', label: '📈 数据统计', page: 'teacherStats' }
+            ] : [
+                { id: 'dashboard', label: '📊 首页', page: 'dashboard' },
+                { id: 'cases', label: '📚 病例库', page: 'studentCases' },
+                { id: 'history', label: '📜 训练历史', page: 'history' },
+                { id: 'ranking', label: '🏆 排行榜', page: 'ranking' }
+            ];
+            
+            nav.innerHTML = items.map(item => `
+                <div class="nav-item ${currentPage === item.page ? 'active' : ''}" 
+                     onclick="navigate('${item.page}')">
+                    ${item.label}
+                </div>
+            `).join('');
+        }
+
+        function navigate(page) {
+            currentPage = page;
+            renderSidebar();
+            
+            const pages = {
+                dashboard: renderDashboard,
+                teacherCases: renderTeacherCases,
+                teacherClasses: renderTeacherClasses,
+                teacherStats: renderTeacherStats,
+                studentCases: renderStudentCases,
+                history: renderHistory,
+                ranking: renderRanking
+            };
+            
+            if (pages[page]) {
+                pages[page]();
+            }
+        }
+
+        // ==================== PAGES ====================
+        async function renderDashboard() {
+            const content = document.getElementById('mainContent');
+            
+            try {
+                const endpoint = currentUser.role === 'teacher' ? '/stats/teacher' : '/stats/student';
+                const stats = await apiGet(endpoint);
+                
+                const isTeacher = currentUser.role === 'teacher';
+                
+                content.innerHTML = `
+                    <div class="card gradient-bg text-white">
+                        <h2>欢迎回来，${currentUser.full_name}！</h2>
+                        <p>${isTeacher ? '管理您的班级和病例，追踪学生学习进度' : '开始今天的训练，提升您的临床思维能力'}</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        ${isTeacher ? `
+                            <div class="stat-card">
+                                <div class="stat-value">${stats.total_classes || 0}</div>
+                                <div class="stat-label">我的班级</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${stats.total_students || 0}</div>
+                                <div class="stat-label">学生人数</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${stats.total_cases_created || 0}</div>
+                                <div class="stat-label">创建病例</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${stats.total_sessions || 0}</div>
+                                <div class="stat-label">训练次数</div>
+                            </div>
+                        ` : `
+                            <div class="stat-card">
+                                <div class="stat-value">${stats.total_sessions || 0}</div>
+                                <div class="stat-label">总训练次数</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${stats.completed_sessions || 0}</div>
+                                <div class="stat-label">已完成</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${stats.average_score ? stats.average_score.toFixed(0) : '-'}</div>
+                                <div class="stat-label">平均分</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${stats.total_cases_attempted || 0}</div>
+                                <div class="stat-label">尝试病例数</div>
+                            </div>
+                        `}
+                    </div>
+                `;
+            } catch (err) {
+                content.innerHTML = '<div class="card">加载失败，请刷新重试</div>';
+            }
+        }
+
+        // Teacher Cases
+        async function renderTeacherCases() {
+            const content = document.getElementById('mainContent');
+            content.innerHTML = '<div class="card">加载中...</div>';
+            
+            try {
+                const cases = await apiGet('/cases');
+                
+                content.innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">病例管理</h2>
+                            <button class="btn btn-primary" onclick="openCaseModal()">
+                                ➕ 创建病例
+                            </button>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>标题</th>
+                                        <th>难度</th>
+                                        <th>诊断</th>
+                                        <th>创建时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${cases.map(c => `
+                                        <tr>
+                                            <td>${c.title}</td>
+                                            <td><span class="badge badge-blue">${c.difficulty}</span></td>
+                                            <td>${c.diagnosis}</td>
+                                            <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                                            <td>
+                                                <div class="flex gap-2">
+                                                    <button class="btn btn-sm btn-secondary" onclick="viewCase(${c.id})">查看</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="editCase(${c.id})">编辑</button>
+                                                    <button class="btn btn-sm btn-danger" onclick="deleteCase(${c.id})">删除</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                content.innerHTML = '<div class="card">加载失败</div>';
+            }
+        }
+
+        // Teacher Classes
+        async function renderTeacherClasses() {
+            const content = document.getElementById('mainContent');
+            content.innerHTML = '<div class="card">加载中...</div>';
+            
+            try {
+                const classes = await apiGet('/classes');
+                
+                content.innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">班级管理</h2>
+                            <button class="btn btn-primary" onclick="openClassModal()">
+                                ➕ 创建班级
+                            </button>
+                        </div>
+                        
+                        <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                            ${classes.map(c => `
+                                <div class="card" style="margin-bottom: 0;">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3>${c.name}</h3>
+                                        <div class="flex gap-2">
+                                            <button class="btn btn-sm btn-secondary" onclick="manageClass(${c.id})">管理</button>
+                                            <button class="btn btn-sm btn-danger" onclick="deleteClass(${c.id})">删除</button>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-500">学生人数：${c.students?.length || 0}人</p>
+                                    <p class="text-gray-400 text-sm mt-2">创建于 ${new Date(c.created_at).toLocaleDateString()}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                content.innerHTML = '<div class="card">加载失败</div>';
+            }
+        }
+
+        // Teacher Stats
+        function renderTeacherStats() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="card">
+                    <h2 class="card-title">数据统计</h2>
+                    <p class="text-gray-500 mt-4">数据统计功能开发中...</p>
+                </div>
+            `;
+        }
+
+        // Student Cases
+        async function renderStudentCases() {
+            const content = document.getElementById('mainContent');
+            content.innerHTML = '<div class="card">加载中...</div>';
+            
+            try {
+                const cases = await apiGet('/cases');
+                
+                content.innerHTML = `
+                    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                        ${cases.map(c => `
+                            <div class="card" style="display: flex; flex-direction: column;">
+                                <div style="flex: 1;">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3>${c.title}</h3>
+                                        <span class="badge badge-blue">${c.difficulty}</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-4">${c.description.substring(0, 100)}...</p>
+                                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                                        <span>👤 ${c.patient_info?.age}岁${c.patient_info?.gender === 'male' ? '男' : '女'}</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary w-full mt-4" onclick="startTraining(${c.id})">
+                                    开始训练
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (err) {
+                content.innerHTML = '<div class="card">加载失败</div>';
+            }
+        }
+
+        // History
+        async function renderHistory() {
+            const content = document.getElementById('mainContent');
+            content.innerHTML = '<div class="card">加载中...</div>';
+            
+            try {
+                const sessions = await apiGet('/sessions');
+                
+                content.innerHTML = `
+                    <div class="card">
+                        <h2 class="card-title mb-4">训练历史</h2>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>病例</th>
+                                        <th>状态</th>
+                                        <th>得分</th>
+                                        <th>时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${sessions.map(s => `
+                                        <tr>
+                                            <td>${s.case?.title || '未知病例'}</td>
+                                            <td>
+                                                <span class="badge ${s.status === 'completed' ? 'badge-green' : 'badge-yellow'}">
+                                                    ${s.status === 'completed' ? '已完成' : '进行中'}
+                                                </span>
+                                            </td>
+                                            <td>${s.score !== null ? s.score + '分' : '-'}</td>
+                                            <td>${new Date(s.started_at).toLocaleDateString()}</td>
+                                            <td>
+                                                ${s.status === 'completed' 
+                                                    ? `<button class="btn btn-sm btn-secondary" onclick="viewReport(${s.id})">查看报告</button>`
+                                                    : `<button class="btn btn-sm btn-primary" onclick="continueTraining(${s.id})">继续训练</button>`
+                                                }
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                content.innerHTML = '<div class="card">加载失败</div>';
+            }
+        }
+
+        // Ranking
+        function renderRanking() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="card">
+                    <h2 class="card-title">排行榜</h2>
+                    <p class="text-gray-500 mt-4">排行榜功能开发中...</p>
+                </div>
+            `;
+        }
+
+        // ==================== API HELPERS ====================
+        async function apiGet(url) {
+            const res = await fetch(API_BASE + url, {
+                headers: { 'Authorization': `Bearer ${currentToken}` }
+            });
+            if (!res.ok) throw new Error('API Error');
+            return res.json();
+        }
+
+        async function apiPost(url, data) {
+            const res = await fetch(API_BASE + url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('API Error');
+            return res.json();
+        }
+
+        async function apiDelete(url) {
+            const res = await fetch(API_BASE + url, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${currentToken}` }
+            });
+            if (!res.ok) throw new Error('API Error');
+        }
+
+        // ==================== MODAL FUNCTIONS ====================
+        function openModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        // Case Modal
+        function openCaseModal(caseData = null) {
+            const isEdit = !!caseData;
+            const content = `
+                <form id="caseForm" onsubmit="saveCase(event, ${caseData?.id || 'null'})">
+                    <div class="form-group">
+                        <label>标题 *</label>
+                        <input type="text" name="title" value="${caseData?.title || ''}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>描述 *</label>
+                        <textarea name="description" rows="3" required>${caseData?.description || ''}</textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>难度</label>
+                            <select name="difficulty">
+                                <option value="简单" ${caseData?.difficulty === '简单' ? 'selected' : ''}>简单</option>
+                                <option value="中等" ${caseData?.difficulty === '中等' ? 'selected' : ''}>中等</option>
+                                <option value="困难" ${caseData?.difficulty === '困难' ? 'selected' : ''}>困难</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>诊断 *</label>
+                            <input type="text" name="diagnosis" value="${caseData?.diagnosis || ''}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>患者年龄</label>
+                            <input type="number" name="patient_age" value="${caseData?.patient_info?.age || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>患者性别</label>
+                            <select name="patient_gender">
+                                <option value="male" ${caseData?.patient_info?.gender === 'male' ? 'selected' : ''}>男</option>
+                                <option value="female" ${caseData?.patient_info?.gender === 'female' ? 'selected' : ''}>女</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">${isEdit ? '更新' : '创建'}</button>
+                    </div>
+                </form>
+            `;
+            openModal(isEdit ? '编辑病例' : '创建病例', content);
+        }
+
+        async function saveCase(e, id) {
+            e.preventDefault();
+            const form = e.target;
+            
+            const data = {
+                title: form.title.value,
+                description: form.description.value,
+                difficulty: form.difficulty.value,
+                diagnosis: form.diagnosis.value,
+                patient_info: {
+                    age: parseInt(form.patient_age.value) || 0,
+                    gender: form.patient_gender.value
+                },
+                symptoms: [],
+                questions: [],
+                answers: []
+            };
+            
+            try {
+                if (id) {
+                    await fetch(`${API_BASE}/cases/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${currentToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    await apiPost('/cases', data);
+                }
+                
+                closeModal();
+                renderTeacherCases();
+            } catch (err) {
+                alert('保存失败');
+            }
+        }
+
+        async function viewCase(id) {
+            try {
+                const c = await apiGet(`/cases/${id}`);
+                const content = `
+                    <div class="space-y-4">
+                        <p><strong>标题：</strong>${c.title}</p>
+                        <p><strong>难度：</strong>${c.difficulty}</p>
+                        <p><strong>诊断：</strong>${c.diagnosis}</p>
+                        <p><strong>描述：</strong>${c.description}</p>
+                        <p><strong>患者信息：</strong>${c.patient_info?.age}岁 ${c.patient_info?.gender === 'male' ? '男' : '女'}</p>
+                        <p><strong>症状：</strong>${c.symptoms?.join('、') || '-'}</p>
+                    </div>
+                `;
+                openModal('病例详情', content);
+            } catch (err) {
+                alert('加载失败');
+            }
+        }
+
+        async function editCase(id) {
+            try {
+                const c = await apiGet(`/cases/${id}`);
+                openCaseModal(c);
+            } catch (err) {
+                alert('加载失败');
+            }
+        }
+
+        async function deleteCase(id) {
+            if (!confirm('确定删除该病例吗？')) return;
+            try {
+                await apiDelete(`/cases/${id}`);
+                renderTeacherCases();
+            } catch (err) {
+                alert('删除失败');
+            }
+        }
+
+        // Class Modal
+        function openClassModal() {
+            const content = `
+                <form onsubmit="saveClass(event)">
+                    <div class="form-group">
+                        <label>班级名称 *</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">创建</button>
+                    </div>
+                </form>
+            `;
+            openModal('创建班级', content);
+        }
+
+        async function saveClass(e) {
+            e.preventDefault();
+            const name = e.target.name.value;
+            
+            try {
+                await apiPost('/classes', { name });
+                closeModal();
+                renderTeacherClasses();
+            } catch (err) {
+                alert('创建失败');
+            }
+        }
+
+        async function deleteClass(id) {
+            if (!confirm('确定删除该班级吗？')) return;
+            try {
+                await apiDelete(`/classes/${id}`);
+                renderTeacherClasses();
+            } catch (err) {
+                alert('删除失败');
+            }
+        }
+
+        function manageClass(id) {
+            alert('班级管理功能开发中...');
+        }
+
+        // Training functions
+        async function startTraining(caseId) {
+            try {
+                const session = await apiPost('/sessions', { case_id: caseId });
+                window.location.href = `/training.html?sessionId=${session.id}`;
+            } catch (err) {
+                alert('开始训练失败');
+            }
+        }
+
+        function continueTraining(sessionId) {
+            window.location.href = `/training.html?sessionId=${sessionId}`;
+        }
+
+        function viewReport(sessionId) {
+            window.location.href = `/report.html?sessionId=${sessionId}`;
+        }
+
+        // ==================== INIT ====================
+        init();
     </script>
 </body>
 </html>
