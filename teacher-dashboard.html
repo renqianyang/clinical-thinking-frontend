@@ -215,8 +215,19 @@
                     <input type="text" id="caseDiagnosis" required placeholder="如：急性心肌梗死">
                 </div>
                 <div class="form-group">
-                    <label>患者信息 (JSON格式)</label>
-                    <textarea id="casePatientInfo" placeholder='{"age": 65, "gender": "male"}'>{"age": 65, "gender": "male"}</textarea>
+                    <label>患者年龄 *</label>
+                    <input type="number" id="patientAge" required placeholder="如：65" value="65">
+                </div>
+                <div class="form-group">
+                    <label>患者性别 *</label>
+                    <select id="patientGender" required>
+                        <option value="male" selected>男</option>
+                        <option value="female">女</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>其他信息</label>
+                    <input type="text" id="patientExtra" placeholder="如：体重70kg，身高175cm">
                 </div>
                 <div class="form-group">
                     <label>症状</label>
@@ -318,12 +329,18 @@
             const questions = Array.from(document.querySelectorAll('#questionsList input')).map(i => i.value).filter(v => v);
             const answers = Array.from(document.querySelectorAll('#answersList input')).map(i => i.value).filter(v => v);
             
+            const patientInfo = {
+                age: parseInt(document.getElementById('patientAge').value),
+                gender: document.getElementById('patientGender').value,
+                extra: document.getElementById('patientExtra').value
+            };
+            
             const data = {
                 title: document.getElementById('caseTitle').value,
                 description: document.getElementById('caseDesc').value,
                 difficulty: document.getElementById('caseDifficulty').value,
                 diagnosis: document.getElementById('caseDiagnosis').value,
-                patient_info: JSON.parse(document.getElementById('casePatientInfo').value || '{}'),
+                patient_info: patientInfo,
                 symptoms, questions, answers
             };
 
@@ -383,7 +400,7 @@
                         <td>${c.title}</td>
                         <td><span class="badge badge-blue">${c.difficulty}</span></td>
                         <td>${new Date(c.created_at).toLocaleDateString()}</td>
-                        <td><button class="btn" style="padding:6px 12px;font-size:12px">查看</button></td>
+                        <td><button class="btn" style="padding:6px 12px;font-size:12px" onclick="viewCase(${c.id})">查看</button></td>
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999">暂无病例</td></tr>';
             } catch (e) { console.error(e); }
@@ -405,6 +422,46 @@
                     </tr>
                 `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999">暂无班级</td></tr>';
             } catch (e) { console.error(e); }
+        }
+
+        async function viewCase(caseId) {
+            try {
+                const res = await fetch(`${API_BASE}/cases/${caseId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const c = await res.json();
+                
+                const patientInfo = c.patient_info || {};
+                const symptoms = c.symptoms || [];
+                const questions = c.questions || [];
+                const answers = c.answers || [];
+                
+                alert(`病例详情：
+
+标题：${c.title}
+难度：${c.difficulty}
+诊断：${c.diagnosis}
+
+描述：
+${c.description}
+
+患者信息：
+年龄：${patientInfo.age || '-'}岁
+性别：${patientInfo.gender === 'male' ? '男' : patientInfo.gender === 'female' ? '女' : '-'}
+其他：${patientInfo.extra || '-'}
+
+症状：${symptoms.join('、') || '-'}
+
+问诊问题：
+${questions.map((q, i) => `${i+1}. ${q}`).join('\n') || '-'}
+
+参考答案：
+${answers.map((a, i) => `${i+1}. ${a}`).join('\n') || '-'}
+
+创建时间：${new Date(c.created_at).toLocaleString()}`);
+            } catch (err) {
+                alert('查看失败');
+            }
         }
 
         loadStats(); loadCases(); loadClasses();
