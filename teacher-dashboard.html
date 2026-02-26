@@ -52,9 +52,8 @@
             border-radius: 8px; cursor: pointer; font-size: 14px;
         }
         .btn:hover { opacity: 0.9; }
-        .btn-secondary {
-            background: #f0f0f0; color: #333;
-        }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn-danger { background: #ff4444; color: white; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
         th { color: #666; font-weight: 500; font-size: 13px; }
@@ -75,7 +74,7 @@
         .modal.show { display: flex; }
         .modal-content {
             background: white; border-radius: 16px; padding: 30px;
-            width: 90%; max-width: 600px; max-height: 90vh;
+            width: 90%; max-width: 700px; max-height: 90vh;
             overflow-y: auto;
         }
         .modal-header {
@@ -118,6 +117,49 @@
             display: flex; justify-content: flex-end;
             gap: 12px; margin-top: 20px;
         }
+        .tabs {
+            display: flex; gap: 20px; border-bottom: 2px solid #eee;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 0; cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500; color: #666;
+        }
+        .tab.active {
+            color: #667eea; border-bottom-color: #667eea;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .student-list {
+            max-height: 300px; overflow-y: auto;
+        }
+        .student-item {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .student-item:hover { background: #f8f9fa; }
+        .empty-state {
+            text-align: center; padding: 40px; color: #999;
+        }
+        .detail-row {
+            display: flex; margin-bottom: 12px;
+        }
+        .detail-label {
+            width: 100px; color: #666; font-size: 14px;
+        }
+        .detail-value {
+            flex: 1; color: #333; font-size: 14px;
+        }
+        .tag-list {
+            display: flex; flex-wrap: wrap; gap: 8px;
+        }
+        .tag {
+            background: #e3f2fd; color: #1976d2;
+            padding: 4px 12px; border-radius: 16px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -133,56 +175,69 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="label">我的班级</div>
-                <div class="value" id="classCount">-</div>
+                <div class="value" id="classCount">0</div>
             </div>
             <div class="stat-card">
                 <div class="label">学生人数</div>
-                <div class="value" id="studentCount">-</div>
+                <div class="value" id="studentCount">0</div>
             </div>
             <div class="stat-card">
                 <div class="label">病例数量</div>
-                <div class="value" id="caseCount">-</div>
+                <div class="value" id="caseCount">0</div>
             </div>
             <div class="stat-card">
                 <div class="label">训练次数</div>
-                <div class="value" id="sessionCount">-</div>
+                <div class="value" id="sessionCount">0</div>
             </div>
         </div>
 
-        <div class="section">
-            <div class="section-header">
-                <h2>📚 我的病例</h2>
-                <button class="btn" onclick="openCaseModal()">+ 创建病例</button>
-            </div>
-            <table id="casesTable">
-                <thead>
-                    <tr>
-                        <th>标题</th>
-                        <th>难度</th>
-                        <th>创建时间</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('cases')">📚 病例管理</div>
+            <div class="tab" onclick="switchTab('classes')">👥 班级管理</div>
         </div>
 
-        <div class="section">
-            <div class="section-header">
-                <h2>👥 我的班级</h2>
-                <button class="btn" onclick="openClassModal()">+ 创建班级</button>
+        <div id="casesTab" class="tab-content active">
+            <div class="section">
+                <div class="section-header">
+                    <h2>我的病例</h2>
+                    <div>
+                        <button class="btn" onclick="openGenerateCaseModal()" style="margin-right:10px">✨ AI生成病例</button>
+                        <button class="btn" onclick="openCaseModal()">+ 创建病例</button>
+                    </div>
+                </div>
+                <table id="casesTable">
+                    <thead>
+                        <tr>
+                            <th>标题</th>
+                            <th>难度</th>
+                            <th>诊断</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
-            <table id="classesTable">
-                <thead>
-                    <tr>
-                        <th>班级名称</th>
-                        <th>学生人数</th>
-                        <th>创建时间</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+        </div>
+
+        <div id="classesTab" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>我的班级</h2>
+                    <button class="btn" onclick="openClassModal()">+ 创建班级</button>
+                </div>
+                <table id="classesTable">
+                    <thead>
+                        <tr>
+                            <th>班级名称</th>
+                            <th>学生人数</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -252,6 +307,61 @@
         </div>
     </div>
 
+    <!-- Generate Case Modal -->
+    <div class="modal" id="generateCaseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✨ AI生成病例</h3>
+                <button class="close-btn" onclick="closeGenerateCaseModal()">&times;</button>
+            </div>
+            <form id="generateCaseForm" onsubmit="submitGenerateCase(event)">
+                <div class="form-group">
+                    <label>病种类型 *</label>
+                    <select id="generateDiseaseType" required>
+                        <option value="">请选择病种</option>
+                        <option value="心血管疾病">心血管疾病</option>
+                        <option value="呼吸系统疾病">呼吸系统疾病</option>
+                        <option value="消化系统疾病">消化系统疾病</option>
+                        <option value="神经系统疾病">神经系统疾病</option>
+                        <option value="内分泌系统疾病">内分泌系统疾病</option>
+                        <option value="泌尿系统疾病">泌尿系统疾病</option>
+                        <option value="血液系统疾病">血液系统疾病</option>
+                        <option value="感染性疾病">感染性疾病</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>难度 *</label>
+                    <select id="generateDifficulty" required>
+                        <option value="简单">简单</option>
+                        <option value="中等" selected>中等</option>
+                        <option value="困难">困难</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>特殊要求（可选）</label>
+                    <input type="text" id="generateSpecial" placeholder="如：合并糖尿病、老年患者等">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeGenerateCaseModal()">取消</button>
+                    <button type="submit" class="btn" id="generateBtn">生成病例</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Case Modal -->
+    <div class="modal" id="viewCaseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>病例详情</h3>
+                <button class="close-btn" onclick="closeViewCaseModal()">&times;</button>
+            </div>
+            <div id="caseDetailContent">
+                <!-- 动态填充 -->
+            </div>
+        </div>
+    </div>
+
     <!-- Create Class Modal -->
     <div class="modal" id="classModal">
         <div class="modal-content">
@@ -272,9 +382,43 @@
         </div>
     </div>
 
+    <!-- Manage Class Modal -->
+    <div class="modal" id="manageClassModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>管理班级</h3>
+                <button class="close-btn" onclick="closeManageClassModal()">&times;</button>
+            </div>
+            <div id="manageClassContent">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchClassTab('students')">👥 班级学生</div>
+                    <div class="tab" onclick="switchClassTab('add')">➕ 添加学生</div>
+                </div>
+                
+                <div id="classStudentsTab" class="tab-content active">
+                    <div class="student-list" id="classStudentList">
+                        <div class="empty-state">加载中...</div>
+                    </div>
+                </div>
+                
+                <div id="addStudentTab" class="tab-content">
+                    <div class="form-group">
+                        <label>选择学生</label>
+                        <select id="studentSelect" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;">
+                            <option>加载中...</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="addStudentToClass()">添加学生</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = 'https://clinical-thinking-backend.onrender.com';
         const token = localStorage.getItem('token');
+        let currentClassId = null;
+        let allStudents = [];
         
         if (!token) window.location.href = '/index.html';
 
@@ -283,6 +427,32 @@
         function logout() {
             localStorage.clear();
             window.location.href = '/index.html';
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'cases') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('casesTab').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('classesTab').classList.add('active');
+            }
+        }
+
+        function switchClassTab(tab) {
+            document.querySelectorAll('#manageClassContent .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#manageClassContent .tab-content').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'students') {
+                document.querySelector('#manageClassContent .tab:nth-child(1)').classList.add('active');
+                document.getElementById('classStudentsTab').classList.add('active');
+            } else {
+                document.querySelector('#manageClassContent .tab:nth-child(2)').classList.add('active');
+                document.getElementById('addStudentTab').classList.add('active');
+            }
         }
 
         // Modal functions
@@ -294,12 +464,32 @@
             document.getElementById('caseModal').classList.remove('show');
             document.getElementById('caseForm').reset();
         }
+        function openGenerateCaseModal() {
+            document.getElementById('generateCaseModal').classList.add('show');
+        }
+        function closeGenerateCaseModal() {
+            document.getElementById('generateCaseModal').classList.remove('show');
+            document.getElementById('generateCaseForm').reset();
+        }
         function openClassModal() {
             document.getElementById('classModal').classList.add('show');
         }
         function closeClassModal() {
             document.getElementById('classModal').classList.remove('show');
             document.getElementById('classForm').reset();
+        }
+        function closeViewCaseModal() {
+            document.getElementById('viewCaseModal').classList.remove('show');
+        }
+        function openManageClassModal(classId) {
+            currentClassId = classId;
+            document.getElementById('manageClassModal').classList.add('show');
+            loadClassStudents(classId);
+            loadAllStudents();
+        }
+        function closeManageClassModal() {
+            document.getElementById('manageClassModal').classList.remove('show');
+            currentClassId = null;
         }
 
         // Dynamic form fields
@@ -320,6 +510,120 @@
             div.className = 'array-input';
             div.innerHTML = `<input type="text" placeholder="答案" value="${val}"><button type="button" onclick="this.parentElement.remove()">删除</button>`;
             document.getElementById('answersList').appendChild(div);
+        }
+
+        // AI Generate Case
+        async function submitGenerateCase(e) {
+            e.preventDefault();
+            const diseaseType = document.getElementById('generateDiseaseType').value;
+            const difficulty = document.getElementById('generateDifficulty').value;
+            const special = document.getElementById('generateSpecial').value;
+            
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.innerHTML = '生成中...';
+            
+            // 模拟AI生成病例
+            const generatedCase = generateMockCase(diseaseType, difficulty, special);
+            
+            try {
+                const res = await fetch(`${API_BASE}/cases`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(generatedCase)
+                });
+                if (res.ok) {
+                    closeGenerateCaseModal();
+                    loadCases();
+                    loadStats();
+                    alert('AI病例生成成功！');
+                } else alert('创建失败');
+            } catch (err) { alert('网络错误'); }
+            
+            btn.disabled = false;
+            btn.innerHTML = '生成病例';
+        }
+
+        function generateMockCase(diseaseType, difficulty, special) {
+            const cases = {
+                '心血管疾病': {
+                    title: '急性胸痛患者',
+                    description: '患者突发胸痛2小时，伴有出汗、恶心。既往有高血压病史。',
+                    diagnosis: '急性心肌梗死',
+                    symptoms: ['胸痛', '出汗', '恶心', '呼吸困难'],
+                    questions: ['疼痛部位？', '疼痛性质？', '持续时间？', '既往病史？'],
+                    answers: ['胸骨后', '压榨性疼痛', '持续2小时', '高血压5年']
+                },
+                '呼吸系统疾病': {
+                    title: '慢性咳嗽患者',
+                    description: '患者咳嗽3个月，咳白色黏痰，活动后气促。吸烟史20年。',
+                    diagnosis: '慢性阻塞性肺疾病',
+                    symptoms: ['慢性咳嗽', '咳痰', '气促', '胸闷'],
+                    questions: ['咳嗽多久了？', '痰液性状？', '吸烟史？', '活动受限？'],
+                    answers: ['3个月', '白色黏痰', '吸烟20年', '上楼气促']
+                },
+                '消化系统疾病': {
+                    title: '腹痛患者',
+                    description: '患者上腹痛1周，餐后加重，伴反酸嗳气。无黑便。',
+                    diagnosis: '胃溃疡',
+                    symptoms: ['上腹痛', '反酸', '嗳气', '餐后痛'],
+                    questions: ['疼痛部位？', '与进食关系？', '有无黑便？', '既往胃病？'],
+                    answers: ['上腹部', '餐后加重', '无黑便', '偶有胃痛']
+                },
+                '神经系统疾病': {
+                    title: '头痛患者',
+                    description: '患者突发剧烈头痛，伴恶心呕吐，颈部僵硬。',
+                    diagnosis: '蛛网膜下腔出血',
+                    symptoms: ['剧烈头痛', '恶心呕吐', '颈部僵硬', '畏光'],
+                    questions: ['头痛性质？', '发病急缓？', '颈部症状？', '意识状态？'],
+                    answers: ['炸裂样剧痛', '突发', '颈部僵硬', '清醒']
+                },
+                '内分泌系统疾病': {
+                    title: '多饮多尿患者',
+                    description: '患者多饮多尿3个月，体重下降5kg，乏力明显。',
+                    diagnosis: '2型糖尿病',
+                    symptoms: ['多饮', '多尿', '体重下降', '乏力'],
+                    questions: ['症状多久？', '体重变化？', '家族史？', '饮食情况？'],
+                    answers: ['3个月', '下降5kg', '父亲糖尿病', '食欲亢进']
+                },
+                '泌尿系统疾病': {
+                    title: '血尿患者',
+                    description: '患者无痛性肉眼血尿2天，无尿频尿急。',
+                    diagnosis: '膀胱肿瘤',
+                    symptoms: ['血尿', '无痛性', '肉眼可见', '无刺激症状'],
+                    questions: ['血尿特点？', '疼痛情况？', '排尿异常？', '既往病史？'],
+                    answers: ['全程血尿', '无痛', '无尿频尿急', '无特殊病史']
+                },
+                '血液系统疾病': {
+                    title: '贫血患者',
+                    description: '患者面色苍白、乏力2个月，月经量增多。',
+                    diagnosis: '缺铁性贫血',
+                    symptoms: ['面色苍白', '乏力', '头晕', '心悸'],
+                    questions: ['症状多久？', '月经情况？', '饮食情况？', '黑便史？'],
+                    answers: ['2个月', '量增多', '偏食', '无黑便']
+                },
+                '感染性疾病': {
+                    title: '发热患者',
+                    description: '患者高热3天，伴寒战、咳嗽，近期有外出史。',
+                    diagnosis: '肺炎',
+                    symptoms: ['高热', '寒战', '咳嗽', '胸痛'],
+                    questions: ['发热特点？', '伴随症状？', '接触史？', '用药史？'],
+                    answers: ['持续高热', '咳嗽咳痰', '近期外出', '未用药']
+                }
+            };
+            
+            const baseCase = cases[diseaseType] || cases['心血管疾病'];
+            
+            return {
+                title: special ? `${baseCase.title}（${special}）` : baseCase.title,
+                description: baseCase.description + (special ? `合并${special}。` : ''),
+                difficulty: difficulty,
+                diagnosis: baseCase.diagnosis,
+                patient_info: { age: 45 + Math.floor(Math.random() * 40), gender: 'male', extra: special || '' },
+                symptoms: baseCase.symptoms,
+                questions: baseCase.questions,
+                answers: baseCase.answers
+            };
         }
 
         // Submit functions
@@ -399,28 +703,11 @@
                     <tr>
                         <td>${c.title}</td>
                         <td><span class="badge badge-blue">${c.difficulty}</span></td>
+                        <td>${c.diagnosis}</td>
                         <td>${new Date(c.created_at).toLocaleDateString()}</td>
                         <td><button class="btn" style="padding:6px 12px;font-size:12px" onclick="viewCase(${c.id})">查看</button></td>
                     </tr>
-                `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999">暂无病例</td></tr>';
-            } catch (e) { console.error(e); }
-        }
-
-        async function loadClasses() {
-            try {
-                const res = await fetch(`${API_BASE}/classes`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const classes = await res.json();
-                const tbody = document.querySelector('#classesTable tbody');
-                tbody.innerHTML = classes.length ? classes.map(c => `
-                    <tr>
-                        <td>${c.name}</td>
-                        <td>${c.students ? c.students.length : 0} 人</td>
-                        <td>${new Date(c.created_at).toLocaleDateString()}</td>
-                        <td><button class="btn" style="padding:6px 12px;font-size:12px">管理</button></td>
-                    </tr>
-                `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999">暂无班级</td></tr>';
+                `).join('') : '<tr><td colspan="5" style="text-align:center;color:#999">暂无病例</td></tr>';
             } catch (e) { console.error(e); }
         }
 
@@ -436,32 +723,143 @@
                 const questions = c.questions || [];
                 const answers = c.answers || [];
                 
-                alert(`病例详情：
-
-标题：${c.title}
-难度：${c.difficulty}
-诊断：${c.diagnosis}
-
-描述：
-${c.description}
-
-患者信息：
-年龄：${patientInfo.age || '-'}岁
-性别：${patientInfo.gender === 'male' ? '男' : patientInfo.gender === 'female' ? '女' : '-'}
-其他：${patientInfo.extra || '-'}
-
-症状：${symptoms.join('、') || '-'}
-
-问诊问题：
-${questions.map((q, i) => `${i+1}. ${q}`).join('\n') || '-'}
-
-参考答案：
-${answers.map((a, i) => `${i+1}. ${a}`).join('\n') || '-'}
-
-创建时间：${new Date(c.created_at).toLocaleString()}`);
+                document.getElementById('caseDetailContent').innerHTML = `
+                    <div class="detail-row">
+                        <div class="detail-label">标题：</div>
+                        <div class="detail-value">${c.title}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">难度：</div>
+                        <div class="detail-value"><span class="badge badge-blue">${c.difficulty}</span></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">诊断：</div>
+                        <div class="detail-value"><span class="badge badge-green">${c.diagnosis}</span></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">描述：</div>
+                        <div class="detail-value">${c.description}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">患者信息：</div>
+                        <div class="detail-value">
+                            年龄：${patientInfo.age || '-'}岁 <br>
+                            性别：${patientInfo.gender === 'male' ? '男' : patientInfo.gender === 'female' ? '女' : '-'} <br>
+                            其他：${patientInfo.extra || '-'}
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">症状：</div>
+                        <div class="detail-value">
+                            <div class="tag-list">${symptoms.map(s => `<span class="tag">${s}</span>`).join('') || '-'}</div>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">问诊问题：</div>
+                        <div class="detail-value">
+                            <ol>${questions.map(q => `<li>${q}</li>`).join('') || '-'}</ol>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">参考答案：</div>
+                        <div class="detail-value">
+                            <ol>${answers.map(a => `<li>${a}</li>`).join('') || '-'}</ol>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">创建时间：</div>
+                        <div class="detail-value">${new Date(c.created_at).toLocaleString()}</div>
+                    </div>
+                `;
+                document.getElementById('viewCaseModal').classList.add('show');
             } catch (err) {
                 alert('查看失败');
             }
+        }
+
+        async function loadClasses() {
+            try {
+                const res = await fetch(`${API_BASE}/classes`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const classes = await res.json();
+                const tbody = document.querySelector('#classesTable tbody');
+                tbody.innerHTML = classes.length ? classes.map(c => `
+                    <tr>
+                        <td>${c.name}</td>
+                        <td>${c.students ? c.students.length : 0} 人</td>
+                        <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                        <td><button class="btn" style="padding:6px 12px;font-size:12px" onclick="openManageClassModal(${c.id})">管理</button></td>
+                    </tr>
+                `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999">暂无班级</td></tr>';
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadClassStudents(classId) {
+            try {
+                const res = await fetch(`${API_BASE}/classes/${classId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const cls = await res.json();
+                const students = cls.students || [];
+                
+                document.getElementById('classStudentList').innerHTML = students.length ? students.map(s => `
+                    <div class="student-item">
+                        <span>${s.full_name} (${s.username})</span>
+                        <button class="btn btn-danger" style="padding:4px 8px;font-size:12px" onclick="removeStudent(${classId}, ${s.id})">移除</button>
+                    </div>
+                `).join('') : '<div class="empty-state">暂无学生</div>';
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadAllStudents() {
+            try {
+                const res = await fetch(`${API_BASE}/users?role=student`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                allStudents = await res.json();
+                
+                const select = document.getElementById('studentSelect');
+                select.innerHTML = allStudents.length ? 
+                    '<option value="">请选择学生</option>' + 
+                    allStudents.map(s => `<option value="${s.id}">${s.full_name} (${s.username})</option>`).join('') :
+                    '<option>暂无学生</option>';
+            } catch (e) { console.error(e); }
+        }
+
+        async function addStudentToClass() {
+            const studentId = document.getElementById('studentSelect').value;
+            if (!studentId || !currentClassId) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/classes/${currentClassId}/students`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ student_id: parseInt(studentId) })
+                });
+                if (res.ok) {
+                    loadClassStudents(currentClassId);
+                    loadClasses();
+                    loadStats();
+                    alert('添加成功');
+                } else alert('添加失败');
+            } catch (err) { alert('网络错误'); }
+        }
+
+        async function removeStudent(classId, studentId) {
+            if (!confirm('确定移除该学生？')) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/classes/${classId}/students/${studentId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    loadClassStudents(classId);
+                    loadClasses();
+                    loadStats();
+                } else alert('移除失败');
+            } catch (err) { alert('网络错误'); }
         }
 
         loadStats(); loadCases(); loadClasses();
