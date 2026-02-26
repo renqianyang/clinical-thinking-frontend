@@ -5,18 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>教师工作台 - 临床思维训练系统</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #f5f7fa;
             min-height: 100vh;
         }
-
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -25,142 +19,104 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .header .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
+        .header h1 { font-size: 20px; font-weight: 600; }
+        .header .user-info { display: flex; align-items: center; gap: 20px; }
         .header .logout-btn {
             background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
+            border: none; color: white; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer;
         }
-
-        .header .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px;
-        }
-
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px; }
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; margin-bottom: 30px;
         }
-
         .stat-card {
-            background: white;
-            padding: 24px;
-            border-radius: 16px;
+            background: white; padding: 24px; border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-
-        .stat-card .label {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .stat-card .value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
+        .stat-card .label { color: #666; font-size: 14px; margin-bottom: 8px; }
+        .stat-card .value { font-size: 32px; font-weight: 700; color: #667eea; }
         .section {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: white; border-radius: 16px; padding: 24px;
+            margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-
         .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 20px;
         }
-
-        .section h2 {
-            font-size: 18px;
-            color: #333;
-        }
-
+        .section h2 { font-size: 18px; color: #333; }
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: transform 0.2s;
+            color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; font-size: 14px;
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
+        .btn:hover { opacity: 0.9; }
+        .btn-secondary {
+            background: #f0f0f0; color: #333;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            color: #666;
-            font-weight: 500;
-            font-size: 13px;
-        }
-
-        td {
-            color: #333;
-            font-size: 14px;
-        }
-
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+        th { color: #666; font-weight: 500; font-size: 13px; }
         .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
+            display: inline-block; padding: 4px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: 500;
         }
-
-        .badge-blue {
-            background: #e3f2fd;
-            color: #1976d2;
+        .badge-blue { background: #e3f2fd; color: #1976d2; }
+        .badge-green { background: #e8f5e9; color: #388e3c; }
+        .badge-orange { background: #fff3e0; color: #f57c00; }
+        
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            z-index: 1000; align-items: center; justify-content: center;
         }
-
-        .badge-green {
-            background: #e8f5e9;
-            color: #388e3c;
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white; border-radius: 16px; padding: 30px;
+            width: 90%; max-width: 600px; max-height: 90vh;
+            overflow-y: auto;
         }
-
-        .badge-orange {
-            background: #fff3e0;
-            color: #f57c00;
+        .modal-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 20px;
+        }
+        .modal-header h3 { font-size: 20px; }
+        .close-btn {
+            background: none; border: none; font-size: 24px;
+            cursor: pointer; color: #666;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block; margin-bottom: 6px;
+            font-size: 14px; color: #333; font-weight: 500;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 10px 14px;
+            border: 2px solid #e0e0e0; border-radius: 8px;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none; border-color: #667eea;
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .array-input {
+            display: flex; gap: 8px; margin-bottom: 8px;
+        }
+        .array-input input { flex: 1; }
+        .array-input button {
+            background: #ff4444; color: white; border: none;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer;
+        }
+        .add-item-btn {
+            background: #4caf50; color: white; border: none;
+            padding: 8px 16px; border-radius: 6px;
+            cursor: pointer; font-size: 13px;
+        }
+        .modal-footer {
+            display: flex; justify-content: flex-end;
+            gap: 12px; margin-top: 20px;
         }
     </style>
 </head>
@@ -196,7 +152,7 @@
         <div class="section">
             <div class="section-header">
                 <h2>📚 我的病例</h2>
-                <button class="btn" onclick="alert('创建病例功能开发中')">+ 创建病例</button>
+                <button class="btn" onclick="openCaseModal()">+ 创建病例</button>
             </div>
             <table id="casesTable">
                 <thead>
@@ -207,18 +163,14 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #999;">加载中...</td>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
 
         <div class="section">
             <div class="section-header">
                 <h2>👥 我的班级</h2>
-                <button class="btn" onclick="alert('创建班级功能开发中')">+ 创建班级</button>
+                <button class="btn" onclick="openClassModal()">+ 创建班级</button>
             </div>
             <table id="classesTable">
                 <thead>
@@ -229,12 +181,83 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #999;">加载中...</td>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Create Case Modal -->
+    <div class="modal" id="caseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>创建新病例</h3>
+                <button class="close-btn" onclick="closeCaseModal()">&times;</button>
+            </div>
+            <form id="caseForm" onsubmit="submitCase(event)">
+                <div class="form-group">
+                    <label>病例标题 *</label>
+                    <input type="text" id="caseTitle" required placeholder="如：急性胸痛病例">
+                </div>
+                <div class="form-group">
+                    <label>病例描述 *</label>
+                    <textarea id="caseDesc" required placeholder="描述患者主诉和基本情况"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>难度 *</label>
+                    <select id="caseDifficulty" required>
+                        <option value="简单">简单</option>
+                        <option value="中等" selected>中等</option>
+                        <option value="困难">困难</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>正确诊断 *</label>
+                    <input type="text" id="caseDiagnosis" required placeholder="如：急性心肌梗死">
+                </div>
+                <div class="form-group">
+                    <label>患者信息 (JSON格式)</label>
+                    <textarea id="casePatientInfo" placeholder='{"age": 65, "gender": "male"}'>{"age": 65, "gender": "male"}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>症状</label>
+                    <div id="symptomsList"></div>
+                    <button type="button" class="add-item-btn" onclick="addSymptom()">+ 添加症状</button>
+                </div>
+                <div class="form-group">
+                    <label>问诊问题</label>
+                    <div id="questionsList"></div>
+                    <button type="button" class="add-item-btn" onclick="addQuestion()">+ 添加问题</button>
+                </div>
+                <div class="form-group">
+                    <label>参考答案</label>
+                    <div id="answersList"></div>
+                    <button type="button" class="add-item-btn" onclick="addAnswer()">+ 添加答案</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCaseModal()">取消</button>
+                    <button type="submit" class="btn">创建</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Class Modal -->
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>创建新班级</h3>
+                <button class="close-btn" onclick="closeClassModal()">&times;</button>
+            </div>
+            <form id="classForm" onsubmit="submitClass(event)">
+                <div class="form-group">
+                    <label>班级名称 *</label>
+                    <input type="text" id="className" required placeholder="如：临床医学2024级1班">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeClassModal()">取消</button>
+                    <button type="submit" class="btn">创建</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -242,9 +265,7 @@
         const API_BASE = 'https://clinical-thinking-backend.onrender.com';
         const token = localStorage.getItem('token');
         
-        if (!token) {
-            window.location.href = '/index.html';
-        }
+        if (!token) window.location.href = '/index.html';
 
         document.getElementById('username').textContent = localStorage.getItem('username') || '教师';
 
@@ -253,76 +274,140 @@
             window.location.href = '/index.html';
         }
 
+        // Modal functions
+        function openCaseModal() {
+            document.getElementById('caseModal').classList.add('show');
+            addSymptom(); addQuestion(); addAnswer();
+        }
+        function closeCaseModal() {
+            document.getElementById('caseModal').classList.remove('show');
+            document.getElementById('caseForm').reset();
+        }
+        function openClassModal() {
+            document.getElementById('classModal').classList.add('show');
+        }
+        function closeClassModal() {
+            document.getElementById('classModal').classList.remove('show');
+            document.getElementById('classForm').reset();
+        }
+
+        // Dynamic form fields
+        function addSymptom(val = '') {
+            const div = document.createElement('div');
+            div.className = 'array-input';
+            div.innerHTML = `<input type="text" placeholder="症状" value="${val}"><button type="button" onclick="this.parentElement.remove()">删除</button>`;
+            document.getElementById('symptomsList').appendChild(div);
+        }
+        function addQuestion(val = '') {
+            const div = document.createElement('div');
+            div.className = 'array-input';
+            div.innerHTML = `<input type="text" placeholder="问题" value="${val}"><button type="button" onclick="this.parentElement.remove()">删除</button>`;
+            document.getElementById('questionsList').appendChild(div);
+        }
+        function addAnswer(val = '') {
+            const div = document.createElement('div');
+            div.className = 'array-input';
+            div.innerHTML = `<input type="text" placeholder="答案" value="${val}"><button type="button" onclick="this.parentElement.remove()">删除</button>`;
+            document.getElementById('answersList').appendChild(div);
+        }
+
+        // Submit functions
+        async function submitCase(e) {
+            e.preventDefault();
+            const symptoms = Array.from(document.querySelectorAll('#symptomsList input')).map(i => i.value).filter(v => v);
+            const questions = Array.from(document.querySelectorAll('#questionsList input')).map(i => i.value).filter(v => v);
+            const answers = Array.from(document.querySelectorAll('#answersList input')).map(i => i.value).filter(v => v);
+            
+            const data = {
+                title: document.getElementById('caseTitle').value,
+                description: document.getElementById('caseDesc').value,
+                difficulty: document.getElementById('caseDifficulty').value,
+                diagnosis: document.getElementById('caseDiagnosis').value,
+                patient_info: JSON.parse(document.getElementById('casePatientInfo').value || '{}'),
+                symptoms, questions, answers
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/cases`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    closeCaseModal();
+                    loadCases();
+                    loadStats();
+                } else alert('创建失败');
+            } catch (err) { alert('网络错误'); }
+        }
+
+        async function submitClass(e) {
+            e.preventDefault();
+            try {
+                const res = await fetch(`${API_BASE}/classes`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: document.getElementById('className').value })
+                });
+                if (res.ok) {
+                    closeClassModal();
+                    loadClasses();
+                    loadStats();
+                } else alert('创建失败');
+            } catch (err) { alert('网络错误'); }
+        }
+
+        // Load data
         async function loadStats() {
             try {
-                const response = await fetch(`${API_BASE}/stats/teacher`, {
+                const res = await fetch(`${API_BASE}/stats/teacher`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const data = await response.json();
-                
+                const data = await res.json();
                 document.getElementById('classCount').textContent = data.total_classes;
                 document.getElementById('studentCount').textContent = data.total_students;
                 document.getElementById('caseCount').textContent = data.total_cases_created;
                 document.getElementById('sessionCount').textContent = data.total_sessions;
-            } catch (error) {
-                console.error('加载统计失败:', error);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function loadCases() {
             try {
-                const response = await fetch(`${API_BASE}/cases`, {
+                const res = await fetch(`${API_BASE}/cases`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const cases = await response.json();
-                
+                const cases = await res.json();
                 const tbody = document.querySelector('#casesTable tbody');
-                if (cases.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">暂无病例</td></tr>';
-                } else {
-                    tbody.innerHTML = cases.map(c => `
-                        <tr>
-                            <td>${c.title}</td>
-                            <td><span class="badge badge-blue">${c.difficulty}</span></td>
-                            <td>${new Date(c.created_at).toLocaleDateString()}</td>
-                            <td><button class="btn" style="padding: 6px 12px; font-size: 12px;">查看</button></td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('加载病例失败:', error);
-            }
+                tbody.innerHTML = cases.length ? cases.map(c => `
+                    <tr>
+                        <td>${c.title}</td>
+                        <td><span class="badge badge-blue">${c.difficulty}</span></td>
+                        <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                        <td><button class="btn" style="padding:6px 12px;font-size:12px">查看</button></td>
+                    </tr>
+                `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999">暂无病例</td></tr>';
+            } catch (e) { console.error(e); }
         }
 
         async function loadClasses() {
             try {
-                const response = await fetch(`${API_BASE}/classes`, {
+                const res = await fetch(`${API_BASE}/classes`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const classes = await response.json();
-                
+                const classes = await res.json();
                 const tbody = document.querySelector('#classesTable tbody');
-                if (classes.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">暂无班级</td></tr>';
-                } else {
-                    tbody.innerHTML = classes.map(c => `
-                        <tr>
-                            <td>${c.name}</td>
-                            <td>${c.students ? c.students.length : 0} 人</td>
-                            <td>${new Date(c.created_at).toLocaleDateString()}</td>
-                            <td><button class="btn" style="padding: 6px 12px; font-size: 12px;">管理</button></td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('加载班级失败:', error);
-            }
+                tbody.innerHTML = classes.length ? classes.map(c => `
+                    <tr>
+                        <td>${c.name}</td>
+                        <td>${c.students ? c.students.length : 0} 人</td>
+                        <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                        <td><button class="btn" style="padding:6px 12px;font-size:12px">管理</button></td>
+                    </tr>
+                `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999">暂无班级</td></tr>';
+            } catch (e) { console.error(e); }
         }
 
-        // 加载数据
-        loadStats();
-        loadCases();
-        loadClasses();
+        loadStats(); loadCases(); loadClasses();
     </script>
 </body>
 </html>
