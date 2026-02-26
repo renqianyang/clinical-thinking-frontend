@@ -69,6 +69,7 @@
         }
         .badge-blue { background: #e3f2fd; color: #1976d2; }
         .badge-green { background: #e8f5e9; color: #388e3c; }
+        .badge-orange { background: #fff3e0; color: #f57c00; }
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; border: none; padding: 8px 16px;
@@ -87,18 +88,22 @@
         }
         .modal.show { display: flex; }
         .modal-content {
-            background: white; border-radius: 16px; padding: 30px;
-            width: 90%; max-width: 800px; max-height: 90vh;
-            overflow-y: auto;
+            background: white; border-radius: 16px; padding: 0;
+            width: 95%; max-width: 900px; max-height: 95vh;
+            overflow: hidden; display: flex; flex-direction: column;
         }
         .modal-header {
             display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 20px;
+            align-items: center; padding: 20px 24px;
+            border-bottom: 1px solid #eee;
         }
-        .modal-header h3 { font-size: 20px; }
+        .modal-header h3 { font-size: 18px; }
         .close-btn {
             background: none; border: none; font-size: 24px;
             cursor: pointer; color: #666;
+        }
+        .modal-body {
+            flex: 1; overflow-y: auto; padding: 24px;
         }
         .chat-container {
             background: #f8f9fa; border-radius: 12px;
@@ -127,7 +132,8 @@
         }
         .chat-time { font-size: 11px; color: #999; margin-top: 4px; }
         .input-area {
-            display: flex; gap: 12px; margin-bottom: 20px;
+            display: flex; gap: 12px; padding: 16px 24px;
+            border-top: 1px solid #eee;
         }
         .input-area input {
             flex: 1; padding: 12px 16px;
@@ -136,11 +142,12 @@
         }
         .input-area input:focus { outline: none; border-color: #667eea; }
         .diagnosis-area {
-            border-top: 2px solid #eee; padding-top: 20px;
+            padding: 16px 24px; border-top: 1px solid #eee;
+            background: #fafafa;
         }
         .diagnosis-area textarea {
             width: 100%; padding: 12px; border: 2px solid #e0e0e0;
-            border-radius: 8px; font-size: 14px; min-height: 80px;
+            border-radius: 8px; font-size: 14px; min-height: 60px;
             margin-bottom: 12px; resize: vertical;
         }
         .patient-info {
@@ -158,6 +165,29 @@
             padding: 4px 12px; border-radius: 16px;
             font-size: 12px;
         }
+        .hint-box {
+            background: #f5f5f5; padding: 12px 16px;
+            border-radius: 8px; margin-bottom: 16px;
+            font-size: 13px; color: #666;
+        }
+        .typing-indicator {
+            display: none; padding: 12px 16px;
+        }
+        .typing-indicator.show { display: block; }
+        .typing-indicator span {
+            display: inline-block; width: 8px; height: 8px;
+            background: #999; border-radius: 50%;
+            margin: 0 2px; animation: typing 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+        th { color: #666; font-weight: 500; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -172,16 +202,16 @@
     <div class="container">
         <div class="welcome">
             <h2>欢迎回来，👋</h2>
-            <p>选择下方病例开始训练，提升你的临床诊断能力</p>
+            <p>选择下方病例开始训练，通过与AI助手问诊，提升你的临床诊断能力</p>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="value" id="totalSessions">-</div>
+                <div class="value" id="totalSessions">0</div>
                 <div class="label">总训练次数</div>
             </div>
             <div class="stat-card">
-                <div class="value" id="completedSessions">-</div>
+                <div class="value" id="completedSessions">0</div>
                 <div class="label">已完成</div>
             </div>
             <div class="stat-card">
@@ -189,7 +219,7 @@
                 <div class="label">平均分</div>
             </div>
             <div class="stat-card">
-                <div class="value" id="casesAttempted">-</div>
+                <div class="value" id="casesAttempted">0</div>
                 <div class="label">尝试病例数</div>
             </div>
         </div>
@@ -219,31 +249,46 @@
     <div class="modal" id="trainingModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="trainingTitle">病例训练</h3>
+                <div>
+                    <h3 id="trainingTitle">病例训练</h3>
+                    <span class="badge badge-blue" id="trainingDifficulty"></span>
+                </div>
                 <button class="close-btn" onclick="closeTrainingModal()">&times;</button>
             </div>
             
-            <div class="patient-info" id="patientInfo"></div>
-            
-            <div class="symptoms-list" id="symptomsTags"></div>
-            
-            <div class="chat-container" id="chatContainer">
-                <div class="chat-message ai">
-                    <div class="chat-bubble">你好！我是AI助手，请开始你的问诊。</div>
-                    <div class="chat-time">现在</div>
+            <div class="modal-body">
+                <div class="patient-info" id="patientInfo"></div>
+                <div class="symptoms-list" id="symptomsTags"></div>
+                
+                <div class="hint-box">
+                    💡 提示：你可以询问患者的症状、病史、检查结果等信息，AI助手会根据病例资料回答你。
+                </div>
+                
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-message ai">
+                        <div class="chat-bubble">你好！我是AI助手。请开始你的问诊，我会根据患者情况回答你的问题。</div>
+                        <div class="chat-time">现在</div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" id="typingIndicator">
+                    <span></span><span></span><span></span>
                 </div>
             </div>
             
             <div class="input-area">
-                <input type="text" id="chatInput" placeholder="输入你的问题..."
+                <input type="text" id="chatInput" placeholder="输入你的问题，如：患者疼痛部位在哪？"
                        onkeypress="if(event.key==='Enter')sendMessage()">
                 <button class="btn" onclick="sendMessage()">发送</button>
             </div>
             
             <div class="diagnosis-area">
-                <h4>📝 提交诊断</h4>
-                <textarea id="diagnosisInput" placeholder="请输入你的最终诊断..."></textarea>
-                <button class="btn" onclick="submitDiagnosis()">提交诊断</button>
+                <h4>📝 提交最终诊断</h4>
+                <textarea id="diagnosisInput" placeholder="根据问诊信息，请输入你的最终诊断..."></textarea>
+                <div style="display:flex;gap:12px">
+                    <button class="btn" onclick="submitDiagnosis()">提交诊断</button>
+                    <button class="btn btn-secondary" onclick="giveUp()">放弃训练</button>
+                </div>
             </div>
         </div>
     </div>
@@ -253,6 +298,7 @@
         const token = localStorage.getItem('token');
         let currentSessionId = null;
         let currentCase = null;
+        let chatHistory = [];
         
         if (!token) window.location.href = '/index.html';
 
@@ -272,13 +318,15 @@
             document.getElementById('trainingModal').classList.remove('show');
             currentSessionId = null;
             currentCase = null;
+            chatHistory = [];
             document.getElementById('chatContainer').innerHTML = `
                 <div class="chat-message ai">
-                    <div class="chat-bubble">你好！我是AI助手，请开始你的问诊。</div>
+                    <div class="chat-bubble">你好！我是AI助手。请开始你的问诊，我会根据患者情况回答你的问题。</div>
                     <div class="chat-time">现在</div>
                 </div>
             `;
             document.getElementById('diagnosisInput').value = '';
+            document.getElementById('typingIndicator').classList.remove('show');
         }
 
         async function loadStats() {
@@ -304,7 +352,7 @@
                 container.innerHTML = cases.length ? cases.map(c => `
                     <div class="case-card" onclick="startTraining(${c.id})">
                         <h3>${c.title}</h3>
-                        <p>${c.description.substring(0, 60)}...</p>
+                        <p>${c.description.substring(0, 80)}...</p>
                         <div class="meta">
                             <span class="badge badge-blue">${c.difficulty}</span>
                             <button class="btn">开始训练</button>
@@ -330,24 +378,44 @@
                     currentCase = session.case;
                     
                     document.getElementById('trainingTitle').textContent = session.case.title;
+                    document.getElementById('trainingDifficulty').textContent = session.case.difficulty;
                     
-                    // 显示患者信息
                     const patientInfo = session.case.patient_info || {};
                     document.getElementById('patientInfo').innerHTML = `
                         <h4>👤 患者信息</h4>
                         <p>${session.case.description}</p>
-                        ${patientInfo.age ? `<p>年龄: ${patientInfo.age}岁 | 性别: ${patientInfo.gender === 'male' ? '男' : '女'}</p>` : ''}
+                        <p><strong>年龄：</strong>${patientInfo.age || '-'}岁 | 
+                           <strong>性别：</strong>${patientInfo.gender === 'male' ? '男' : patientInfo.gender === 'female' ? '女' : '-'}</p>
+                        ${patientInfo.extra ? `<p><strong>其他：</strong>${patientInfo.extra}</p>` : ''}
                     `;
                     
-                    // 显示症状
                     const symptoms = session.case.symptoms || [];
-                    document.getElementById('symptomsTags').innerHTML = symptoms.map(s => 
-                        `<span class="symptom-tag">${s}</span>`
-                    ).join('');
+                    document.getElementById('symptomsTags').innerHTML = symptoms.length ? 
+                        symptoms.map(s => `<span class="symptom-tag">${s}</span>`).join('') : '';
+                    
+                    // 加载历史对话
+                    loadChatHistory(session.id);
                     
                     openTrainingModal();
                 } else alert('开始训练失败');
             } catch (err) { alert('网络错误'); }
+        }
+
+        async function loadChatHistory(sessionId) {
+            try {
+                const res = await fetch(`${API_BASE}/sessions/${sessionId}/dialogues`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const dialogues = await res.json();
+                
+                if (dialogues.length > 0) {
+                    const container = document.getElementById('chatContainer');
+                    container.innerHTML = '';
+                    dialogues.forEach(d => {
+                        addChatMessage(d.message, d.role, new Date(d.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
+                    });
+                }
+            } catch (e) { console.error(e); }
         }
 
         async function sendMessage() {
@@ -355,9 +423,10 @@
             const message = input.value.trim();
             if (!message || !currentSessionId) return;
             
-            // 添加用户消息
             addChatMessage(message, 'user');
             input.value = '';
+            
+            document.getElementById('typingIndicator').classList.add('show');
             
             try {
                 await fetch(`${API_BASE}/dialogues`, {
@@ -373,12 +442,14 @@
                     })
                 });
                 
-                // 模拟AI回复（实际应该调用AI接口）
-                setTimeout(() => {
-                    const aiResponse = getAIResponse(message);
+                // AI回复
+                const aiResponse = await getAIResponse(message);
+                
+                setTimeout(async () => {
+                    document.getElementById('typingIndicator').classList.remove('show');
                     addChatMessage(aiResponse, 'ai');
                     
-                    fetch(`${API_BASE}/dialogues`, {
+                    await fetch(`${API_BASE}/dialogues`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -390,26 +461,67 @@
                             role: 'ai'
                         })
                     });
-                }, 1000);
-            } catch (err) { console.error(err); }
-        }
-
-        function getAIResponse(question) {
-            const responses = {
-                '疼痛': '患者描述疼痛位于胸骨后，呈压榨性，疼痛评分8分。',
-                '病史': '患者有高血压病史5年，规律服药。',
-                '检查': '心电图显示ST段抬高，心肌酶谱升高。',
-                '症状': '患者伴有呼吸困难、出汗、恶心等症状。'
-            };
-            for (let key in responses) {
-                if (question.includes(key)) return responses[key];
+                }, 1000 + Math.random() * 1000);
+            } catch (err) { 
+                document.getElementById('typingIndicator').classList.remove('show');
+                console.error(err); 
             }
-            return '请继续询问更多细节，或根据已有信息进行诊断。';
         }
 
-        function addChatMessage(message, role) {
+        async function getAIResponse(question) {
+            if (!currentCase) return '抱歉，我无法回答。';
+            
+            const q = question.toLowerCase();
+            const symptoms = currentCase.symptoms || [];
+            const questions = currentCase.questions || [];
+            const answers = currentCase.answers || [];
+            const patientInfo = currentCase.patient_info || {};
+            
+            // 智能匹配回答
+            if (q.includes('年龄') || q.includes('多大')) {
+                return `患者${patientInfo.age}岁。`;
+            }
+            if (q.includes('性别') || q.includes('男女')) {
+                return `患者是${patientInfo.gender === 'male' ? '男性' : '女性'}。`;
+            }
+            if (q.includes('症状') || q.includes('不舒服') || q.includes('哪里')) {
+                return `患者主要症状有：${symptoms.join('、')}。`;
+            }
+            if (q.includes('疼痛') || q.includes('疼')) {
+                return symptoms.find(s => s.includes('痛')) || '患者有疼痛症状。';
+            }
+            if (q.includes('多久') || q.includes('时间') || q.includes('几天')) {
+                const idx = questions.findIndex(qs => qs.includes('多久') || qs.includes('时间'));
+                return idx >= 0 ? answers[idx] : '症状持续一段时间了。';
+            }
+            if (q.includes('病史') || q.includes('以前')) {
+                const idx = questions.findIndex(qs => qs.includes('病史') || qs.includes('既往'));
+                return idx >= 0 ? answers[idx] : '患者有一些既往病史。';
+            }
+            if (q.includes('检查') || q.includes('结果') || q.includes('化验')) {
+                return '相关检查结果需要结合临床表现综合判断。';
+            }
+            
+            // 匹配预设问题
+            for (let i = 0; i < questions.length; i++) {
+                if (q.includes(questions[i].substring(0, 4))) {
+                    return answers[i] || '需要进一步检查确认。';
+                }
+            }
+            
+            // 默认回复
+            const defaults = [
+                '根据患者目前的情况，建议进一步询问相关症状。',
+                '这是一个重要的观察点，请结合其他症状综合判断。',
+                '患者的情况需要仔细评估，建议继续问诊。',
+                '从临床表现来看，这需要进一步的鉴别诊断。'
+            ];
+            return defaults[Math.floor(Math.random() * defaults.length)];
+        }
+
+        function addChatMessage(message, role, timeStr) {
             const container = document.getElementById('chatContainer');
-            const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            const time = timeStr || new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
             container.innerHTML += `
                 <div class="chat-message ${role}">
                     <div class="chat-bubble">${message}</div>
@@ -426,6 +538,8 @@
                 return;
             }
             
+            if (!confirm('确定提交诊断吗？提交后将无法修改。')) return;
+            
             try {
                 const res = await fetch(`${API_BASE}/sessions/${currentSessionId}/diagnosis`, {
                     method: 'POST',
@@ -438,12 +552,18 @@
                 
                 if (res.ok) {
                     const result = await res.json();
-                    alert(`诊断提交成功！\n你的诊断: ${diagnosis}\n得分: ${result.score}分`);
+                    const isCorrect = result.score >= 50;
+                    alert(`🎉 诊断提交成功！\n\n你的诊断：${diagnosis}\n正确诊断：${currentCase.diagnosis}\n得分：${result.score}分\n\n${isCorrect ? '✅ 诊断正确！' : '❌ 诊断有误，请继续学习。'}`);
                     closeTrainingModal();
                     loadStats();
                     loadSessions();
                 } else alert('提交失败');
             } catch (err) { alert('网络错误'); }
+        }
+
+        function giveUp() {
+            if (!confirm('确定放弃本次训练吗？')) return;
+            closeTrainingModal();
         }
 
         async function loadSessions() {
@@ -463,26 +583,26 @@
                     `;
                 } else {
                     container.innerHTML = `
-                        <table style="width:100%">
+                        <table>
                             <thead>
                                 <tr>
-                                    <th style="text-align:left;padding:12px">病例</th>
-                                    <th style="text-align:left;padding:12px">状态</th>
-                                    <th style="text-align:left;padding:12px">得分</th>
-                                    <th style="text-align:left;padding:12px">时间</th>
+                                    <th>病例</th>
+                                    <th>状态</th>
+                                    <th>得分</th>
+                                    <th>时间</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${sessions.slice(0, 5).map(s => `
                                     <tr>
-                                        <td style="padding:12px">${s.case ? s.case.title : '未知病例'}</td>
-                                        <td style="padding:12px">
-                                            <span class="badge ${s.status === 'completed' ? 'badge-green' : 'badge-blue'}">
+                                        <td>${s.case ? s.case.title : '未知病例'}</td>
+                                        <td>
+                                            <span class="badge ${s.status === 'completed' ? 'badge-green' : 'badge-orange'}">
                                                 ${s.status === 'completed' ? '已完成' : '进行中'}
                                             </span>
                                         </td>
-                                        <td style="padding:12px">${s.score !== null ? s.score + '分' : '-'}</td>
-                                        <td style="padding:12px">${new Date(s.started_at).toLocaleDateString()}</td>
+                                        <td>${s.score !== null ? s.score + '分' : '-'}</td>
+                                        <td>${new Date(s.started_at).toLocaleDateString()}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
