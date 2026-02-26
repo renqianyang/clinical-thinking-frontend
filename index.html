@@ -710,10 +710,10 @@
                                 <tbody>
                                     ${cases.map(c => `
                                         <tr>
-                                            <td>${c.title}</td>
-                                            <td><span class="badge badge-blue">${c.difficulty}</span></td>
-                                            <td>${c.diagnosis}</td>
-                                            <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                                            <td>${c.title || '-'}</td>
+                                            <td><span class="badge badge-blue">${c.difficulty || '中等'}</span></td>
+                                            <td>${c.diagnosis || c.expected_diagnosis || '待完善'}</td>
+                                            <td>${c.created_at ? new Date(c.created_at).toLocaleDateString() : '-'}</td>
                                             <td>
                                                 <div class="flex gap-2">
                                                     <button class="btn btn-sm btn-secondary" onclick="viewCase(${c.id})">查看</button>
